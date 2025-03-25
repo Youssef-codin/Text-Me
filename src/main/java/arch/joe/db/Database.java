@@ -51,7 +51,7 @@ public abstract class Database {
 
                 if (table.equals("users")) {
                     System.out.printf("%-20s %-60s%n", "Username", "Password (Hashed)");
-                    System.out.println("--------------------------------------------------------------");
+                    System.out.println("-----------------------------------------------------------------");
 
                     while (rs.next()) {
                         System.out.printf("%-20s %-60s%n",
@@ -100,6 +100,10 @@ public abstract class Database {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void deleteUser() {
+
     }
 
     // msgs has msg_id, msg_sender, msg_receiver, msg, time_stamp
