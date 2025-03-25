@@ -47,8 +47,19 @@
       <artifactId>javafx-controls</artifactId>
       <version>24</version>
     </dependency>
+    <!-- SQLite-->
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.49.1.0</version>
+    </dependency>
+    <!-- JJWT -->
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt</artifactId>
+      <version>0.12.6</version>
+    </dependency>
   </dependencies>
-
 
   <build>
     <!-- Plugins-->
