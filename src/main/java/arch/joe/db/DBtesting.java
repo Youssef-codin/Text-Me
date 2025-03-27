@@ -4,11 +4,11 @@ import arch.joe.app.User;
 import arch.joe.security.Crypto;
 
 public class DBtesting {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         Database.connect();
         // String salt = Crypto.makeSalt();
-        // try {
+        //
         // Database.insertUsr(new User("Ahmed132", Crypto.stringToHash("password",
         // salt), salt));
         // Database.insertUsr(new User("Mohamed", Crypto.stringToHash("password", salt),
@@ -23,10 +23,10 @@ public class DBtesting {
         // salt), salt));
         // Database.insertUsr(new User("AnnoyingOrange", Crypto.stringToHash("password",
         // salt), salt));
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // }
-
+        //
         Database.showAllTable("users");
+        Database.updateUser("users", "usr_password", "i dont need a password", "Joe");
+        Database.showAllTable("users");
+
     }
 }

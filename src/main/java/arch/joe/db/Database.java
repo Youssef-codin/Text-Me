@@ -2,8 +2,6 @@
 /*
  * TO DO:
  * add more select commands to search for certain stuff
- * add modify 
- * add delete
  */
 
 package arch.joe.db;
@@ -102,8 +100,35 @@ public abstract class Database {
         }
     }
 
-    public static void deleteUser() {
+    public static void updateUser(String table, String column, String newThing, String name) {
 
+        try (Connection conn = DriverManager.getConnection(url)) {
+
+            PreparedStatement ps = conn.prepareStatement("UPDATE users SET " + column + " = ? WHERE usr_name = ?");
+            ps.setString(1, newThing);
+            ps.setString(2, name);
+
+            int columns = ps.executeUpdate();
+            System.out.println("Changed: " + columns);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteUser(String name) {
+
+        try (Connection conn = DriverManager.getConnection(url)) {
+
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM users WHERE usr_name = ?");
+            ps.setString(1, name);
+
+            int columns = ps.executeUpdate();
+            System.out.println("Changed: " + columns);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     // msgs has msg_id, msg_sender, msg_receiver, msg, time_stamp
