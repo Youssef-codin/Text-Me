@@ -15,7 +15,12 @@ import java.sql.SQLException;
 import arch.joe.app.Msg;
 import arch.joe.app.User;
 
-public abstract class Database {
+public class Database {
+
+    private Database() {
+
+    }
+
     private static final String url = "jdbc:sqlite:database/chat.db";
 
     public static Connection connect() {

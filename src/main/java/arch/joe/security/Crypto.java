@@ -9,7 +9,11 @@ import javax.crypto.*;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public abstract class Crypto {
+public class Crypto {
+
+    private Crypto() {
+
+    }
 
     private static final int ITERATIONS = 100000;
     private static final int KEYLENGTH = 256;
