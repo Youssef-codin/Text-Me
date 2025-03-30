@@ -100,6 +100,29 @@ public abstract class Database {
         }
     }
 
+    public static User getUser(String name) {
+
+        try (Connection conn = DriverManager.getConnection(url)) {
+
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE usr_name = ?");
+            ps.setString(1, name);
+            ResultSet results = ps.executeQuery();
+            if (!results.next()) {
+                System.out.println("Username not found.");
+                return null;
+            } else {
+                return new User(results.getString("usr_name"), results.getString("usr_password"),
+                        results.getString("usr_salt"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static void updateUser(String table, String column, String newThing, String name) {
 
         try (Connection conn = DriverManager.getConnection(url)) {

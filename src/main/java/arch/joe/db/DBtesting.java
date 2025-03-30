@@ -24,9 +24,5 @@ public class DBtesting {
         // Database.insertUsr(new User("AnnoyingOrange", Crypto.stringToHash("password",
         // salt), salt));
         //
-        Database.showAllTable("users");
-        Database.updateUser("users", "usr_password", "i dont need a password", "Joe");
-        Database.showAllTable("users");
-
     }
 }

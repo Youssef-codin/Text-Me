@@ -11,8 +11,8 @@ public class User {
     public User(String name, String password, String salt) throws Exception {
 
         this.name = name;
-        this.password = Crypto.stringToHash(password, salt);
-        this.salt = Crypto.makeSalt();
+        this.password = password;
+        this.salt = salt;
 
     }
 
