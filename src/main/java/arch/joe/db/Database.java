@@ -6,11 +6,14 @@
 
 package arch.joe.db;
 
+import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 import arch.joe.app.Msg;
 import arch.joe.app.User;
@@ -169,6 +172,9 @@ public class Database {
 
         try (Connection conn = DriverManager.getConnection(url)) {
 
+            Statement sm = conn.createStatement();
+            sm.execute("PRAGMA foreign_keys = ON");
+
             PreparedStatement ps = conn
                     .prepareStatement("INSERT INTO msgs(msg_sender, msg_receiver, msg, time_stamp) values(?, ?, ?, ?)");
             ps.setString(1, sender);
@@ -178,9 +184,44 @@ public class Database {
 
             int columns = ps.executeUpdate();
             System.out.println("Changed: " + columns);
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+
+            if (e.getErrorCode() == 19) {
+                System.out.println("User does not exist.");
+            }
+        }
+    }
+
+    // msgs has msg_id, msg_sender, msg_receiver, msg, time_stamp
+    public static ArrayList<Msg> getMsgs(String user1, String user2) {
+
+        ArrayList<Msg> messages = new ArrayList<>();
+
+        try (Connection conn = DriverManager.getConnection(url)) {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT * FROM msgs WHERE (msg_sender = ? AND msg_receiver = ?) OR (msg_sender = ? AND msg_receiver = ?) ORDER BY time_stamp ASC");
+            ps.setString(1, user1);
+            ps.setString(2, user2);
+            ps.setString(3, user2);
+            ps.setString(4, user1);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+
+                String message = rs.getString("msg");
+                String sender = rs.getString("msg_sender");
+                String receiver = rs.getString("msg_receiver");
+                long timestamp = rs.getLong("time_stamp");
+
+                messages.add(new Msg(message, sender, receiver));
+            }
+            return messages;
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
     }
 }
