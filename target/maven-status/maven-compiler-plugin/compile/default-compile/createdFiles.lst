@@ -1,8 +1,9 @@
 arch/joe/app/Msg.class
 arch/joe/security/Auth.class
+arch/joe/server/ChatServer.class
 arch/joe/app/User.class
 arch/joe/Main.class
+arch/joe/network/ChatClient.class
 arch/joe/db/Database.class
 arch/joe/db/DBtesting.class
-arch/joe/network/Server.class
 arch/joe/security/Crypto.class

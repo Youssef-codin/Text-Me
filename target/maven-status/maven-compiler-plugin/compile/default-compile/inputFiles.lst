@@ -1,8 +1,9 @@
 /home/joe-arch/Projects/Java Projects/Text-Me/src/main/java/arch/joe/Main.java
 /home/joe-arch/Projects/Java Projects/Text-Me/src/main/java/arch/joe/app/Msg.java
 /home/joe-arch/Projects/Java Projects/Text-Me/src/main/java/arch/joe/app/User.java
+/home/joe-arch/Projects/Java Projects/Text-Me/src/main/java/arch/joe/client/ChatClient.java
 /home/joe-arch/Projects/Java Projects/Text-Me/src/main/java/arch/joe/db/DBtesting.java
 /home/joe-arch/Projects/Java Projects/Text-Me/src/main/java/arch/joe/db/Database.java
-/home/joe-arch/Projects/Java Projects/Text-Me/src/main/java/arch/joe/network/Server.java
 /home/joe-arch/Projects/Java Projects/Text-Me/src/main/java/arch/joe/security/Auth.java
 /home/joe-arch/Projects/Java Projects/Text-Me/src/main/java/arch/joe/security/Crypto.java
+/home/joe-arch/Projects/Java Projects/Text-Me/src/main/java/arch/joe/server/ChatServer.java
