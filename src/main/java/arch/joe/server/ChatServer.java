@@ -11,7 +11,10 @@ import jakarta.websocket.server.ServerEndpoint;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.sound.midi.Receiver;
 
 import org.glassfish.tyrus.server.Server;
 
@@ -19,6 +22,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import arch.joe.app.Msg;
 import arch.joe.app.User;
 import arch.joe.db.Database;
 import arch.joe.security.Auth;
@@ -32,7 +36,14 @@ import arch.joe.security.Auth;
 public class ChatServer {
 
     // session id : username
-    private static HashMap<String, String> activeClients = new HashMap<>();
+    private static HashMap<String, String> seshIDToName = new HashMap<>();
+    // username : session
+    private static HashMap<String, Session> nameToSesh = new HashMap<>();
+
+    private void addToClients(Session session, String username) {
+        seshIDToName.put(session.getId(), username);
+        nameToSesh.put(username, session);
+    }
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
@@ -42,7 +53,6 @@ public class ChatServer {
 
     @OnMessage
     public void onMsg(Session session, String msg) throws Exception {
-        System.out.println("msg received: " + msg);
         JsonElement jsonElement = new JsonParser().parse(msg);
         JsonObject obj = jsonElement.getAsJsonObject();
         String type = obj.get("type").getAsString();
@@ -54,6 +64,7 @@ public class ChatServer {
 
             case "login" -> loginRequest(session, obj);
             case "salt_request" -> saltRequest(session, obj);
+            case "send_msg" -> MsgRequest(session, obj);
             case "register" -> System.out.println("Register type");
             default -> System.out.println("no type");
 
@@ -68,19 +79,18 @@ public class ChatServer {
         String correctPass = correctData.getPassword();
 
         JsonObject response = new JsonObject();
+        response.addProperty("type", "login");
 
         // type: login
         // authorized: t or f
         // token: token or none
         if (correctPass.equals(password)) {
 
-            activeClients.put(session.getId(), username);
-            response.addProperty("type", "login");
+            addToClients(session, username);
             response.addProperty("authorized", "t");
             response.addProperty("token", Auth.makeToken(username));
 
         } else {
-            response.addProperty("type", "login");
             response.addProperty("authorized", "f");
             response.addProperty("token", "none");
 
@@ -90,23 +100,73 @@ public class ChatServer {
         session.getAsyncRemote().sendText(response.toString());
     }
 
-    public boolean checkUser(String token, Session activeSesh) {
+    public void saltRequest(Session session, JsonObject obj) {
 
-        String tokenUsername = Auth.verifyToken(token);
-        String realSeshName = activeClients.get(activeSesh.getId());
+        String username = obj.get("username").getAsString();
+        User usr = Database.getUser(username);
 
-        if (realSeshName.equals(tokenUsername)) {
-            return true;
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "salt");
+
+        if (usr == null) {
+            System.out.println("Username not found");
+            response.addProperty("salt", "none");
+            System.out.println("sending: " + "none");
+            session.getAsyncRemote().sendText(response.toString());
+
         } else {
-            return false;
+            String salt = usr.getSalt();
+            response.addProperty("salt", salt);
+
+            System.out.println("sending: " + salt);
+            session.getAsyncRemote().sendText(response.toString());
         }
     }
 
-    public void saltRequest(Session session, JsonObject obj) {
-        String username = obj.get("username").getAsString();
-        String salt = Database.getUser(username).getSalt();
-        System.out.println("sending: " + salt);
-        session.getAsyncRemote().sendText(salt);
+    // request.addProperty("message", message);
+    // request.addProperty("sender", sender);
+    // request.addProperty("receiver", receiver);
+    // request.addProperty("time", time);
+    public void MsgRequest(Session sesh, JsonObject obj) {
+
+        String token = obj.get("token").getAsString();
+        String tokenName = Auth.verifyToken(token); // also verifies the token
+
+        if (tokenName == null) {
+            System.err.println("bad token");
+
+        } else {
+            Msg msg = new Msg(obj.get("message").getAsString(),
+                    obj.get("sender").getAsString(),
+                    obj.get("receiver").getAsString());
+
+            String sender = msg.getMsgSender();
+            String client = seshIDToName.get(sesh.getId());
+
+            if (!(sender.equals(tokenName) && client.equals(tokenName))) {
+                System.out.println("bad sender or client");
+            } else {
+                System.out.println("sender is the token user and client is the proper client");
+                User dbReceiver = Database.getUser(msg.getMsgReceiver());
+
+                if (dbReceiver == null) {
+                    System.out.println("user Not found");
+                } else {
+                    Database.insertMsg(msg);
+                    Session receiverOnline = nameToSesh.get(msg.getMsgReceiver());
+
+                    if (receiverOnline == null) {
+                        System.out.println("user is not online");
+
+                    } else {
+                        System.out.println("Sending message to receiver");
+                        obj.addProperty("time", msg.msgTime());
+                        receiverOnline.getAsyncRemote().sendText(obj.toString());
+                        System.out.println(seshIDToName);
+                    }
+                }
+            }
+        }
     }
 
     @OnClose

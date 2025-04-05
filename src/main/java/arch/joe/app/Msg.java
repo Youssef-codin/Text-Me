@@ -18,6 +18,14 @@ public class Msg {
         this.timeStamp = ts.getTime();
     }
 
+    public Msg(String msg, String msgSender, String msgReceiver, long time) {
+
+        this.msg = msg;
+        this.msgSender = msgSender;
+        this.msgReceiver = msgReceiver;
+        this.timeStamp = time;
+    }
+
     public String getMsg() {
         return msg;
     }

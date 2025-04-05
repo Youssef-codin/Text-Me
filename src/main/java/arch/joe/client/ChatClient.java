@@ -13,12 +13,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import arch.joe.app.User;
+import arch.joe.app.Msg;
 import arch.joe.security.Crypto;
 
 public class ChatClient extends WebSocketClient {
 
     private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<String> chatQueue = new LinkedBlockingQueue<>();
+    private String token = new String();
 
     public ChatClient(URI serverUri, Draft draft) {
         super(serverUri, draft);
@@ -41,8 +43,18 @@ public class ChatClient extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
-        System.out.println(message);
-        messageQueue.add(message);
+        // System.out.println("Client received: " + message + " @ " +
+        // System.identityHashCode(message));
+
+        JsonElement jsonElement = new JsonParser().parse(message);
+        JsonObject obj = jsonElement.getAsJsonObject();
+        String type = obj.get("type").getAsString();
+
+        if (type.equals("send_msg")) {
+            chatQueue.add(message);
+        } else {
+            messageQueue.add(message);
+        }
     }
 
     @Override
@@ -59,7 +71,38 @@ public class ChatClient extends WebSocketClient {
         // if the error is fatal then onClose will be called additionally
     }
 
-    public void loginRequest(String user, String pass) {
+    public JsonObject login(String name, String password) throws Exception {
+
+        this.connect();
+        Thread.sleep(100);
+        this.saltRequest(name);
+        String saltJson = this.waitForMessage();
+
+        JsonElement saltElement = new JsonParser().parse(saltJson);
+        JsonObject saltObj = saltElement.getAsJsonObject();
+        String salt = saltObj.get("salt").getAsString();
+
+        if (salt.equals("none")) {
+            System.out.println("username not found.");
+            return null;
+        } else {
+            this.loginRequest(name, Crypto.stringToHash(password, salt));
+            String login = this.waitForMessage();
+
+            JsonElement jsonElement = new JsonParser().parse(login);
+            JsonObject obj = jsonElement.getAsJsonObject();
+
+            String auth = obj.get("authorized").getAsString();
+
+            if (auth.equals("f")) {
+                return null;
+            } else {
+                return obj;
+            }
+        }
+    }
+
+    private void loginRequest(String user, String pass) {
         JsonObject request = new JsonObject();
         request.addProperty("type", "login");
         request.addProperty("username", user);
@@ -75,35 +118,38 @@ public class ChatClient extends WebSocketClient {
         send(request.toString());
     }
 
+    // msg
+    // msgSender
+    // msgReceiver
+    // timeStamp
+    public void sendMsg(Msg msg, String token) {
+        String message = msg.getMsg();
+        String sender = msg.getMsgSender();
+        String receiver = msg.getMsgReceiver();
+
+        JsonObject msgRequest = new JsonObject();
+        msgRequest.addProperty("type", "send_msg");
+        msgRequest.addProperty("message", message);
+        msgRequest.addProperty("sender", sender);
+        msgRequest.addProperty("receiver", receiver);
+        msgRequest.addProperty("token", token);
+
+        send(msgRequest.toString());
+    }
+
     public String waitForMessage() throws InterruptedException {
         return messageQueue.take();
     }
 
-    // type: login
-    // authorized: t or f
-    // token: token or none
-    public static void main(String[] args) throws Exception {
+    public String waitForChat() throws InterruptedException {
+        return chatQueue.take();
+    }
 
-        String token;
+    public void setToken(String token) {
+        this.token = token;
+    }
 
-        ChatClient c = new ChatClient(new URI(
-                "ws://localhost:8025/text-me/chat"));
-        c.connect();
-        Thread.sleep(100);
-        c.saltRequest("Youssef");
-        String salt = c.waitForMessage();
-
-        c.loginRequest("Youssef", Crypto.stringToHash("password", salt));
-        String login = c.waitForMessage();
-
-        JsonElement jsonElement = new JsonParser().parse(login);
-        JsonObject obj = jsonElement.getAsJsonObject();
-        String type = obj.get("authorized").getAsString();
-
-        if (type.equals("f")) {
-            System.out.println("Wrong Password");
-        } else {
-            token = obj.get("token").getAsString();
-        }
+    public String getToken() {
+        return this.token;
     }
 }
