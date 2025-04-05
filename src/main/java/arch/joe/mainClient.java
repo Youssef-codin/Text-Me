@@ -9,7 +9,7 @@ import arch.joe.app.Msg;
 import arch.joe.client.ChatClient;
 import arch.joe.client.ChatListener;
 
-public class Client {
+public class mainClient {
     public static void main(String[] args) throws Exception {
 
         Scanner scanner = new Scanner(System.in);
