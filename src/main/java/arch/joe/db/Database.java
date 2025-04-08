@@ -1,12 +1,5 @@
-
-/*
- * TO DO:
- * add more select commands to search for certain stuff
- */
-
 package arch.joe.db;
 
-import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -81,7 +74,7 @@ public class Database {
     }
 
     // users has usr_name, usr_password, usr_salt
-    public static void insertUsr(User usr) {
+    public static boolean insertUsr(User usr) {
 
         String name = usr.getName();
         String pass = usr.getPassword();
@@ -97,13 +90,16 @@ public class Database {
 
             int columns = ps.executeUpdate();
             System.out.println("Changed: " + columns);
+            return true;
 
         } catch (SQLException e) {
             if (e.getErrorCode() == 19) {
-
                 System.out.println(name + " is already taken.");
+                return false;
+
             } else {
                 e.printStackTrace();
+                return false;
             }
         }
     }
@@ -213,7 +209,6 @@ public class Database {
                 String message = rs.getString("msg");
                 String sender = rs.getString("msg_sender");
                 String receiver = rs.getString("msg_receiver");
-                long timestamp = rs.getLong("time_stamp");
 
                 messages.add(new Msg(message, sender, receiver));
             }

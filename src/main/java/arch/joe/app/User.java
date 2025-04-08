@@ -1,7 +1,5 @@
 package arch.joe.app;
 
-import arch.joe.security.Crypto;
-
 public class User {
 
     private String name;

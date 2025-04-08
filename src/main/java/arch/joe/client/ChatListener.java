@@ -1,8 +1,5 @@
 package arch.joe.client;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -30,6 +27,7 @@ public class ChatListener implements Runnable {
             try {
                 String chatMsg = c.waitForChat();
                 printMessage(chatMsg);
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -41,23 +39,28 @@ public class ChatListener implements Runnable {
         JsonObject message = jsonElement.getAsJsonObject();
 
         String type = message.get("type").getAsString();
-        String sender = message.get("sender").getAsString();
-        String receiver = message.get("receiver").getAsString();
-        String messageText = message.get("message").getAsString();
-        String token = message.get("token").getAsString();
-        long time = message.get("time").getAsLong();
+        System.out.println(type);
 
-        // Convert the timestamp to a human-readable format
-        SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm:ss");
-        Date resultdate = new java.util.Date(time);
-        String timeString = sdf.format(resultdate);
+        if (type.equals("bad_token")) {
+            System.err.println("BAD TOKEN");
 
-        if ("send_msg".equals(type)) {
-            System.out.println("[" + timeString + "] " + sender + " to " + receiver + ": " + messageText);
+        } else {
+            String sender = message.get("sender").getAsString();
+            String messageText = message.get("message").getAsString();
+            long time = message.get("time").getAsLong();
+
+            // Convert the timestamp to a human-readable format
+            SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm:ss");
+            Date resultdate = new java.util.Date(time);
+            String timeString = sdf.format(resultdate);
+
+            System.out.println("[" + timeString + "] " + sender + ": " + messageText);
+
         }
     }
 
     public void stopListener() {
         is_running = false;
+
     }
 }

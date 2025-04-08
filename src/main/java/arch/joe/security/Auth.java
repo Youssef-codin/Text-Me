@@ -10,8 +10,6 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import arch.joe.app.User;
-
 public class Auth {
 
     private static final Algorithm algo = Algorithm.HMAC256(makeSecret());

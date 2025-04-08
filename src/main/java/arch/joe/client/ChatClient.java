@@ -50,7 +50,7 @@ public class ChatClient extends WebSocketClient {
         JsonObject obj = jsonElement.getAsJsonObject();
         String type = obj.get("type").getAsString();
 
-        if (type.equals("send_msg")) {
+        if (type.equals("receive_msg")) {
             chatQueue.add(message);
         } else {
             messageQueue.add(message);
@@ -71,10 +71,18 @@ public class ChatClient extends WebSocketClient {
         // if the error is fatal then onClose will be called additionally
     }
 
-    public JsonObject login(String name, String password) throws Exception {
+    public void registerRequest(String name, String hashedPass, String salt) throws Exception {
+        JsonObject request = new JsonObject();
+        request.addProperty("type", "register");
+        request.addProperty("username", name);
+        request.addProperty("password", hashedPass);
+        request.addProperty("salt", salt);
 
-        this.connect();
-        Thread.sleep(100);
+        send(request.toString());
+    }
+
+    public JsonObject login(String name, String hashedPass) throws Exception {
+
         this.saltRequest(name);
         String saltJson = this.waitForMessage();
 
@@ -85,8 +93,9 @@ public class ChatClient extends WebSocketClient {
         if (salt.equals("none")) {
             System.out.println("username not found.");
             return null;
+
         } else {
-            this.loginRequest(name, Crypto.stringToHash(password, salt));
+            this.loginRequest(name, Crypto.stringToHash(hashedPass, salt));
             String login = this.waitForMessage();
 
             JsonElement jsonElement = new JsonParser().parse(login);
@@ -102,19 +111,26 @@ public class ChatClient extends WebSocketClient {
         }
     }
 
-    private void loginRequest(String user, String pass) {
+    private void loginRequest(String name, String pass) {
         JsonObject request = new JsonObject();
         request.addProperty("type", "login");
-        request.addProperty("username", user);
+        request.addProperty("username", name);
         request.addProperty("password", pass);
 
         send(request.toString());
     }
 
-    public void saltRequest(String user) {
+    public void saltRequest(String name) {
         JsonObject request = new JsonObject();
         request.addProperty("type", "salt_request");
-        request.addProperty("username", user);
+        request.addProperty("username", name);
+        send(request.toString());
+    }
+
+    public void userThere(String name) {
+        JsonObject request = new JsonObject();
+        request.addProperty("type", "user_there");
+        request.addProperty("username", name);
         send(request.toString());
     }
 
