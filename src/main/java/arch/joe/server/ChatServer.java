@@ -1,3 +1,7 @@
+/*
+ * TO DO message history
+ */
+
 package arch.joe.server;
 
 import java.io.IOException;
@@ -9,14 +13,16 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.glassfish.tyrus.server.Server;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -52,7 +58,8 @@ public class ChatServer {
 
     @OnMessage
     public void onMsg(Session sesh, String msg) throws Exception {
-        JsonElement jsonElement = new JsonParser().parse(msg);
+
+        JsonElement jsonElement = JsonParser.parseString(msg);
         JsonObject obj = jsonElement.getAsJsonObject();
         String type = obj.get("type").getAsString();
 
@@ -66,6 +73,7 @@ public class ChatServer {
             case "send_msg" -> msgRequest(sesh, obj);
             case "register" -> registerRequest(sesh, obj);
             case "user_there" -> userThere(sesh, obj);
+            case "history_request" -> historyRequest(sesh, obj);
             default -> System.err.println("no type");
         }
     }
@@ -252,21 +260,43 @@ public class ChatServer {
         }
     }
 
+    private void historyRequest(Session sesh, JsonObject obj) {
+
+        Gson gson = new Gson();
+
+        String name1 = obj.get("name1").getAsString();
+        String name2 = obj.get("name2").getAsString();
+
+        ArrayList<Msg> msgs = Database.getMsgs(name1, name2);
+        JsonArray msgArray = new JsonArray();
+
+        for (Msg msg : msgs) {
+            JsonElement elem = gson.toJsonTree(msg);
+            msgArray.add(elem);
+        }
+
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "convo");
+        response.add("msgs", msgArray);
+
+        sesh.getAsyncRemote().sendText(response.toString());
+    }
+
     public static void runServer() {
         Server server = new Server("localhost", 8025, "/text-me", null, ChatServer.class);
+        Scanner scanner = new Scanner(System.in);
 
         try {
             server.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Please press a key to stop the server.");
-            reader.readLine();
+            System.out.print("Press a key to stop the server");
+            scanner.nextLine();
 
         } catch (Exception e) {
             e.printStackTrace();
 
         } finally {
             server.stop();
-
+            scanner.close();
         }
     }
 

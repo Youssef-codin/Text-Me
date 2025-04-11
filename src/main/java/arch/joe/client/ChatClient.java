@@ -1,6 +1,7 @@
 package arch.joe.client;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -9,6 +10,8 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.handshake.ServerHandshake;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -20,7 +23,7 @@ public class ChatClient extends WebSocketClient {
 
     private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
     private final BlockingQueue<String> chatQueue = new LinkedBlockingQueue<>();
-    private String token = new String();
+    private String token;
 
     public ChatClient(URI serverUri, Draft draft) {
         super(serverUri, draft);
@@ -46,7 +49,7 @@ public class ChatClient extends WebSocketClient {
         // System.out.println("Client received: " + message + " @ " +
         // System.identityHashCode(message));
 
-        JsonElement jsonElement = new JsonParser().parse(message);
+        JsonElement jsonElement = JsonParser.parseString(message);
         JsonObject obj = jsonElement.getAsJsonObject();
         String type = obj.get("type").getAsString();
 
@@ -68,10 +71,11 @@ public class ChatClient extends WebSocketClient {
     @Override
     public void onError(Exception e) {
         e.printStackTrace();
+        System.exit(0);
         // if the error is fatal then onClose will be called additionally
     }
 
-    public void registerRequest(String name, String hashedPass, String salt) throws Exception {
+    public boolean registerRequest(String name, String hashedPass, String salt) throws Exception {
         JsonObject request = new JsonObject();
         request.addProperty("type", "register");
         request.addProperty("username", name);
@@ -79,6 +83,16 @@ public class ChatClient extends WebSocketClient {
         request.addProperty("salt", salt);
 
         send(request.toString());
+
+        String response = waitForMessage();
+        JsonElement jsonElement = JsonParser.parseString(response);
+        JsonObject obj = jsonElement.getAsJsonObject();
+        response = obj.get("successful").getAsString();
+        if (response.equals("true")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public JsonObject login(String name, String hashedPass) throws Exception {
@@ -86,7 +100,7 @@ public class ChatClient extends WebSocketClient {
         this.saltRequest(name);
         String saltJson = this.waitForMessage();
 
-        JsonElement saltElement = new JsonParser().parse(saltJson);
+        JsonElement saltElement = JsonParser.parseString(saltJson);
         JsonObject saltObj = saltElement.getAsJsonObject();
         String salt = saltObj.get("salt").getAsString();
 
@@ -98,7 +112,7 @@ public class ChatClient extends WebSocketClient {
             this.loginRequest(name, Crypto.stringToHash(hashedPass, salt));
             String login = this.waitForMessage();
 
-            JsonElement jsonElement = new JsonParser().parse(login);
+            JsonElement jsonElement = JsonParser.parseString(login);
             JsonObject obj = jsonElement.getAsJsonObject();
 
             String auth = obj.get("authorized").getAsString();
@@ -127,11 +141,23 @@ public class ChatClient extends WebSocketClient {
         send(request.toString());
     }
 
-    public void userThere(String name) {
+    public boolean userThere(String name) throws InterruptedException {
         JsonObject request = new JsonObject();
         request.addProperty("type", "user_there");
         request.addProperty("username", name);
         send(request.toString());
+
+        String isThere = waitForMessage();
+
+        JsonElement jsonElement = JsonParser.parseString(isThere);
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+        isThere = jsonObject.get("is_there").getAsString();
+
+        if (isThere.equals("true")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // msg
@@ -151,6 +177,39 @@ public class ChatClient extends WebSocketClient {
         msgRequest.addProperty("token", token);
 
         send(msgRequest.toString());
+    }
+
+    public ArrayList<Msg> msgHistory(String name1, String name2) throws InterruptedException {
+
+        Gson gson = new Gson();
+
+        JsonObject historyRequest = new JsonObject();
+        historyRequest.addProperty("type", "history_request");
+        historyRequest.addProperty("name1", name1);
+        historyRequest.addProperty("name2", name2);
+
+        send(historyRequest.toString());
+        String response = waitForMessage();
+        JsonElement element = JsonParser.parseString(response);
+        JsonObject obj = element.getAsJsonObject();
+
+        JsonArray jsonArray = obj.getAsJsonArray("msgs");
+        ArrayList<Msg> msgsList = new ArrayList<>();
+
+        System.out.println("------------");
+        System.out.println("    Chat    ");
+        System.out.println("------------");
+
+        for (JsonElement elem : jsonArray) {
+            Msg msg = gson.fromJson(elem, Msg.class);
+            msgsList.add(msg);
+            String sender = msg.getMsgSender();
+            String messageText = msg.getMsg();
+
+            System.out.println(sender + ": " + messageText);
+        }
+
+        return msgsList;
     }
 
     public String waitForMessage() throws InterruptedException {

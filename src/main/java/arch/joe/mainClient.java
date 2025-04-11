@@ -3,9 +3,7 @@ package arch.joe;
 import java.net.URI;
 import java.util.Scanner;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import arch.joe.app.Msg;
 import arch.joe.client.ChatClient;
@@ -34,6 +32,7 @@ public class mainClient {
 
             } else {
                 register(scanner, c);
+
             }
         }
     }
@@ -46,16 +45,14 @@ public class mainClient {
         String pass = scanner.nextLine();
         String salt = Crypto.makeSalt();
 
-        c.registerRequest(name, Crypto.stringToHash(pass, salt), salt);
-        String response = c.waitForMessage();
-        JsonElement jsonElement = new JsonParser().parse(response);
-        JsonObject obj = jsonElement.getAsJsonObject();
-        response = obj.get("successful").getAsString();
+        boolean response = c.registerRequest(name, Crypto.stringToHash(pass, salt), salt);
 
-        if (response.equals("true")) {
+        if (response) {
             System.out.println("registered");
+
         } else {
             System.err.println("username unavailable");
+
         }
     }
 
@@ -72,42 +69,44 @@ public class mainClient {
             System.exit(0);
 
         } else {
-            c.setToken(obj.get("token").getAsString());
-            System.out.print("Enter username of the person you want to text: ");
-            String receiver = scanner.nextLine();
+            message(scanner, c, name, obj);
 
-            c.userThere(receiver);
-            String isThere = c.waitForMessage();
+        }
+    }
 
-            JsonElement jsonElement = new JsonParser().parse(isThere);
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
-            isThere = jsonObject.get("is_there").getAsString();
+    private static void message(Scanner scanner, ChatClient c, String name, JsonObject obj)
+            throws InterruptedException {
+        c.setToken(obj.get("token").getAsString());
+        System.out.print("Enter username of the person you want to text: ");
+        String receiver = scanner.nextLine();
 
-            if (isThere.equals("false")) {
-                System.out.println("user not found");
+        boolean isThere = c.userThere(receiver);
 
-            } else {
+        if (!isThere) {
+            System.out.println("user not found");
 
-                Thread thread = new Thread(new ChatListener(c));
-                thread.start();
-                String message;
-                Thread.sleep(100);
-                System.out.println("press q and anytime to quit the chat.");
+        } else {
 
-                while (true) {
-                    message = scanner.nextLine();
+            c.msgHistory(name, receiver);
+            Thread thread = new Thread(new ChatListener(c));
+            thread.start();
+            String message;
+            Thread.sleep(100);
+            System.out.println("press q and anytime to quit the chat.");
 
-                    if (message.equalsIgnoreCase("q")) {
-                        System.out.println("goodbye!");
-                        System.exit(0);
+            while (true) {
+                message = scanner.nextLine();
 
-                    } else {
-                        Msg msg = new Msg(message, name, receiver);
-                        c.sendMsg(msg, c.getToken());
+                if (message.equalsIgnoreCase("q")) {
+                    System.out.println("goodbye!");
+                    c.close();
+                    System.exit(0);
 
-                    }
+                } else {
+                    Msg msg = new Msg(message, name, receiver);
+                    c.sendMsg(msg, c.getToken());
+
                 }
-
             }
         }
     }

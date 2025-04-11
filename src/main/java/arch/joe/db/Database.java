@@ -19,10 +19,10 @@ public class Database {
 
     private static final String url = "jdbc:sqlite:database/chat.db";
 
-    public static Connection connect() {
+    public static Connection testConnect() {
         try {
             Connection conn = DriverManager.getConnection(url);
-            System.out.println("Successful connection to the SQLite database.");
+            System.out.println("Successfully connected to the SQLite database.");
             return conn;
         } catch (SQLException e) {
             System.err.println("Connection failed: " + e.getMessage());
