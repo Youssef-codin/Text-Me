@@ -29,7 +29,8 @@ import com.google.gson.JsonParser;
 
 import arch.joe.app.Msg;
 import arch.joe.app.User;
-import arch.joe.db.Database;
+import arch.joe.db.MessageDao;
+import arch.joe.db.UserDao;
 import arch.joe.security.Auth;
 
 // JsonObject request = new JsonObject();
@@ -48,6 +49,11 @@ public class ChatServer {
     private static void addToClients(Session sesh, String username) {
         seshIDToName.put(sesh.getId(), username);
         nameToSesh.put(username, sesh);
+    }
+
+    private void removeSeshAndName(Session sesh, String name) {
+        seshIDToName.remove(sesh.getId());
+        nameToSesh.remove(name);
     }
 
     @OnOpen
@@ -82,8 +88,7 @@ public class ChatServer {
     public void onClose(Session sesh) throws IOException {
         System.out.println("connection closed by: " + sesh.getId());
         String name = seshIDToName.get(sesh.getId());
-        seshIDToName.remove(sesh.getId());
-        nameToSesh.remove(name);
+        removeSeshAndName(sesh, name);
     }
 
     @OnError
@@ -91,8 +96,7 @@ public class ChatServer {
 
         System.err.println("connection fucked for: " + sesh.getId());
         String name = seshIDToName.get(sesh.getId());
-        seshIDToName.remove(sesh.getId());
-        nameToSesh.remove(name);
+        removeSeshAndName(sesh, name);
         e.printStackTrace();
     }
 
@@ -106,7 +110,7 @@ public class ChatServer {
         String salt = obj.get("salt").getAsString();
 
         User usr = new User(username, password, salt);
-        boolean available = Database.insertUsr(usr);
+        boolean available = UserDao.insertUser(usr);
         JsonObject response = new JsonObject();
         response.addProperty("type", "register_request");
 
@@ -123,11 +127,11 @@ public class ChatServer {
         sesh.getAsyncRemote().sendText(response.toString());
     }
 
-    private void loginRequest(Session sesh, JsonObject obj) {
+    private void loginRequest(Session sesh, JsonObject obj) throws Exception {
         String username = obj.get("username").getAsString();
         String password = obj.get("password").getAsString();
 
-        User correctData = Database.getUser(username);
+        User correctData = UserDao.getUser(username);
         String correctPass = correctData.getPassword();
 
         JsonObject response = new JsonObject();
@@ -151,10 +155,10 @@ public class ChatServer {
         sesh.getAsyncRemote().sendText(response.toString());
     }
 
-    private void saltRequest(Session sesh, JsonObject obj) {
+    private void saltRequest(Session sesh, JsonObject obj) throws Exception {
 
         String username = obj.get("username").getAsString();
-        User usr = Database.getUser(username);
+        User usr = UserDao.getUser(username);
 
         JsonObject response = new JsonObject();
         response.addProperty("type", "salt");
@@ -174,10 +178,10 @@ public class ChatServer {
         }
     }
 
-    private void userThere(Session sesh, JsonObject obj) {
+    private void userThere(Session sesh, JsonObject obj) throws Exception {
         String username = obj.get("username").getAsString();
 
-        User available = Database.getUser(username);
+        User available = UserDao.getUser(username);
 
         JsonObject response = new JsonObject();
         response.addProperty("type", "user_there");
@@ -212,7 +216,7 @@ public class ChatServer {
     // sender: sender
     // receiver: receiver
     // time: time
-    private void msgRequest(Session sesh, JsonObject obj) {
+    private void msgRequest(Session sesh, JsonObject obj) throws Exception {
 
         Msg msg = new Msg(obj.get("message").getAsString(),
                 obj.get("sender").getAsString(),
@@ -231,16 +235,16 @@ public class ChatServer {
         }
     }
 
-    private void msgResponse(JsonObject obj, Msg msg) {
+    private void msgResponse(JsonObject obj, Msg msg) throws Exception {
         System.out.println("sender is the token user and client is the proper client");
-        User dbReceiver = Database.getUser(msg.getMsgReceiver());
+        User dbReceiver = UserDao.getUser(msg.getMsgReceiver());
         System.out.println(dbReceiver);
 
         if (dbReceiver == null) {
             System.err.println("user Not found");
 
         } else {
-            Database.insertMsg(msg);
+            MessageDao.insertMsg(msg);
             Session receiverOnline = nameToSesh.get(msg.getMsgReceiver());
 
             for (HashMap.Entry<String, Session> name : nameToSesh.entrySet()) {
@@ -267,7 +271,7 @@ public class ChatServer {
         String name1 = obj.get("name1").getAsString();
         String name2 = obj.get("name2").getAsString();
 
-        ArrayList<Msg> msgs = Database.getMsgs(name1, name2);
+        ArrayList<Msg> msgs = MessageDao.getMsgs(name1, name2);
         JsonArray msgArray = new JsonArray();
 
         for (Msg msg : msgs) {
