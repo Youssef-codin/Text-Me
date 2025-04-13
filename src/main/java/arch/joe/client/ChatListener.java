@@ -1,16 +1,20 @@
 package arch.joe.client;
 
+import java.security.PrivateKey;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import arch.joe.security.Crypto;
+
 public class ChatListener implements Runnable {
 
     private boolean is_running = true;
-    ChatClient c;
+    private static ChatClient c;
 
     public ChatListener(ChatClient chatClient) {
-        this.c = chatClient;
+        c = chatClient;
     }
 
     @Override
@@ -24,11 +28,13 @@ public class ChatListener implements Runnable {
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
-    public static void printMessage(String jsonMessage) {
+    public static void printMessage(String jsonMessage) throws Exception {
         JsonElement jsonElement = JsonParser.parseString(jsonMessage);
         JsonObject message = jsonElement.getAsJsonObject();
 
@@ -39,10 +45,13 @@ public class ChatListener implements Runnable {
 
         } else {
             String sender = message.get("sender").getAsString();
-            String messageText = message.get("message").getAsString();
+            String encryptedMessageText = message.get("message").getAsString();
+            PrivateKey key = c.readPrivateKey(c.getUsername());
+            if (key != null) {
+                String messageText = Crypto.decipher(encryptedMessageText, key);
+                System.out.println(sender + ": " + messageText);
 
-            System.out.println(sender + ": " + messageText);
-
+            }
         }
     }
 

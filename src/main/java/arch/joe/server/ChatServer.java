@@ -32,6 +32,7 @@ import arch.joe.app.User;
 import arch.joe.db.MessageDao;
 import arch.joe.db.UserDao;
 import arch.joe.security.Auth;
+import arch.joe.security.Crypto;
 
 // JsonObject request = new JsonObject();
 // request.addProperty("type", "salt_request");
@@ -80,6 +81,7 @@ public class ChatServer {
             case "register" -> registerRequest(sesh, obj);
             case "user_there" -> userThere(sesh, obj);
             case "history_request" -> historyRequest(sesh, obj);
+            case "request_pub_key" -> keyRequest(sesh, obj);
             default -> System.err.println("no type");
         }
     }
@@ -108,9 +110,12 @@ public class ChatServer {
         String username = obj.get("username").getAsString();
         String password = obj.get("password").getAsString();
         String salt = obj.get("salt").getAsString();
+        String stringKey = obj.get("key").getAsString();
+        byte[] key = Crypto.decoderHelper(stringKey);
 
-        User usr = new User(username, password, salt);
+        User usr = new User(username, password, salt, key);
         boolean available = UserDao.insertUser(usr);
+
         JsonObject response = new JsonObject();
         response.addProperty("type", "register_request");
 
@@ -149,8 +154,8 @@ public class ChatServer {
         } else {
             response.addProperty("authorized", "f");
             response.addProperty("token", "none");
-
         }
+
         System.out.println("sending: " + response);
         sesh.getAsyncRemote().sendText(response.toString());
     }
@@ -283,6 +288,23 @@ public class ChatServer {
         response.addProperty("type", "convo");
         response.add("msgs", msgArray);
 
+        sesh.getAsyncRemote().sendText(response.toString());
+    }
+
+    private void keyRequest(Session sesh, JsonObject obj) throws Exception {
+        String name = obj.get("username").getAsString();
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "key");
+
+        User user = UserDao.getUser(name);
+        if (user == null) {
+            response.addProperty("key", "none");
+            System.err.println("user not found");
+
+        } else {
+            response.addProperty("key", Crypto.encoderHelper(user.getKey()));
+
+        }
         sesh.getAsyncRemote().sendText(response.toString());
     }
 

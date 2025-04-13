@@ -2,12 +2,18 @@ package arch.joe.security;
 
 import java.util.Base64;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.spec.EncodedKeySpec;
 import java.security.spec.KeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.*;
 import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
 
 public class Crypto {
 
@@ -15,8 +21,13 @@ public class Crypto {
 
     }
 
-    private static final int ITERATIONS = 100000;
-    private static final int KEYLENGTH = 256;
+    public static String encoderHelper(byte[] bytes) {
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+
+    public static byte[] decoderHelper(String string) {
+        return Base64.getDecoder().decode(string);
+    }
 
     public static String makeSalt() {
 
@@ -25,46 +36,72 @@ public class Crypto {
         byte[] salt = new byte[16];
         random.nextBytes(salt);
 
-        return Base64.getEncoder().encodeToString(salt);
+        return encoderHelper(salt);
     }
 
-    public static SecretKey makeKey(String password, String salt) throws Exception {
+    public static KeyPair makeKeyPair() throws Exception {
 
-        byte[] saltBytes = Base64.getDecoder().decode(salt);
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), saltBytes, ITERATIONS, KEYLENGTH);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+        KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+        gen.initialize(2048);
+        return gen.generateKeyPair();
+
     }
 
     public static String stringToHash(String password, String salt) throws Exception {
 
-        byte[] saltBytes = Base64.getDecoder().decode(salt);
+        byte[] saltBytes = decoderHelper(salt);
 
         KeySpec spec = new PBEKeySpec(password.toCharArray(), saltBytes, 65536, 256);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
 
         byte[] hashBytes = factory.generateSecret(spec).getEncoded();
-        return Base64.getEncoder().encodeToString(hashBytes);
+        return encoderHelper(hashBytes);
     }
 
-    public static String Cipher(String msg, SecretKey key) throws Exception {
+    public static String cipher(String msg, PublicKey key) throws Exception {
 
-        Cipher cipher = Cipher.getInstance("AES");
+        Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE, key);
 
         byte[] encryptedBytes = cipher.doFinal(msg.getBytes());
 
-        return Base64.getEncoder().encodeToString(encryptedBytes);
+        return encoderHelper(encryptedBytes);
     }
 
-    public static String Decipher(String encryptedMsg, SecretKey key) throws Exception {
+    public static String decipher(String encryptedMsg, PrivateKey key) throws Exception {
 
-        Cipher cipher = Cipher.getInstance("AES");
+        Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.DECRYPT_MODE, key);
 
-        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedMsg);
+        byte[] encryptedBytes = decoderHelper(encryptedMsg);
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
 
         return new String(decryptedBytes, StandardCharsets.UTF_8);
+    }
+
+    public static PublicKey bytesToKey(byte[] bytes) throws Exception {
+
+        KeyFactory keyFac = KeyFactory.getInstance("RSA");
+        EncodedKeySpec publickeyspec = new X509EncodedKeySpec(bytes);
+
+        return keyFac.generatePublic(publickeyspec);
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        KeyPair pair = makeKeyPair();
+        PrivateKey privkey = pair.getPrivate();
+        PublicKey pubkey = pair.getPublic();
+
+        // make into bytes for storage
+        byte[] bytes = pubkey.getEncoded();
+
+        // recreate instance
+        PublicKey pubkey2 = bytesToKey(bytes);
+
+        String ciphered = cipher("blah blah blah", pubkey2);
+        String deciphered = decipher(ciphered, privkey);
+        System.out.println(deciphered);
+
     }
 }

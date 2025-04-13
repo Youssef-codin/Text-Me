@@ -1,3 +1,7 @@
+/*
+ * TO DO make update user safer
+ */
+
 package arch.joe.db;
 
 import java.sql.Connection;
@@ -17,13 +21,16 @@ public class UserDao {
         String name = usr.getName();
         String pass = usr.getPassword();
         String salt = usr.getSalt();
+        byte[] key = usr.getKey();
 
         try (Connection conn = Database.connect()) {
             PreparedStatement ps = conn
-                    .prepareStatement("INSERT INTO users(usr_name, usr_password, usr_salt) values(?, ?, ?)");
+                    .prepareStatement(
+                            "INSERT INTO users(usr_name, usr_password, usr_salt, usr_key) values(?, ?, ?, ?)");
             ps.setString(1, name);
             ps.setString(2, pass);
             ps.setString(3, salt);
+            ps.setBytes(4, key);
 
             int columns = ps.executeUpdate();
             System.out.println("Changed: " + columns);
@@ -44,19 +51,22 @@ public class UserDao {
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE usr_name = ?");
             ps.setString(1, name);
             ResultSet results = ps.executeQuery();
+
             if (!results.next()) {
                 System.out.println("Username not found.");
                 return null;
             } else {
                 return new User(results.getString("usr_name"), results.getString("usr_password"),
-                        results.getString("usr_salt"));
+                        results.getString("usr_salt"), results.getBytes("usr_key"));
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
     }
 
+    // need to make this safer
     public static void updateUser(String column, String newThing, String name) {
         try (Connection conn = Database.connect()) {
             PreparedStatement ps = conn.prepareStatement("UPDATE users SET " + column + " = ? WHERE usr_name = ?");

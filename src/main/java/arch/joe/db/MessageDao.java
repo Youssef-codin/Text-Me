@@ -31,6 +31,7 @@ public class MessageDao {
 
             int columns = ps.executeUpdate();
             System.out.println("Changed: " + columns);
+
         } catch (SQLException e) {
             e.printStackTrace();
             if (e.getErrorCode() == 19) {
@@ -58,9 +59,11 @@ public class MessageDao {
                 String receiver = rs.getString("msg_receiver");
                 messages.add(new Msg(message, sender, receiver));
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return messages;
     }
 

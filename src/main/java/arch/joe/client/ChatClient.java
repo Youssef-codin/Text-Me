@@ -1,6 +1,14 @@
 package arch.joe.client;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.EncodedKeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -24,6 +32,7 @@ public class ChatClient extends WebSocketClient {
     private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
     private final BlockingQueue<String> chatQueue = new LinkedBlockingQueue<>();
     private String token;
+    private String username;
 
     public ChatClient(URI serverUri, Draft draft) {
         super(serverUri, draft);
@@ -75,12 +84,13 @@ public class ChatClient extends WebSocketClient {
         // if the error is fatal then onClose will be called additionally
     }
 
-    public boolean registerRequest(String name, String hashedPass, String salt) throws Exception {
+    public boolean registerRequest(String name, String hashedPass, String salt, byte[] pubKey) throws Exception {
         JsonObject request = new JsonObject();
         request.addProperty("type", "register");
         request.addProperty("username", name);
         request.addProperty("password", hashedPass);
         request.addProperty("salt", salt);
+        request.addProperty("key", Crypto.encoderHelper(pubKey));
 
         send(request.toString());
 
@@ -88,6 +98,7 @@ public class ChatClient extends WebSocketClient {
         JsonElement jsonElement = JsonParser.parseString(response);
         JsonObject obj = jsonElement.getAsJsonObject();
         response = obj.get("successful").getAsString();
+
         if (response.equals("true")) {
             return true;
         } else {
@@ -120,6 +131,7 @@ public class ChatClient extends WebSocketClient {
             if (auth.equals("f")) {
                 return null;
             } else {
+                this.username = name;
                 return obj;
             }
         }
@@ -164,22 +176,80 @@ public class ChatClient extends WebSocketClient {
     // msgSender
     // msgReceiver
     // timeStamp
-    public void sendMsg(Msg msg, String token) {
+    public void sendMsg(Msg msg, String token) throws Exception {
         String message = msg.getMsg();
         String sender = msg.getMsgSender();
         String receiver = msg.getMsgReceiver();
 
-        JsonObject msgRequest = new JsonObject();
-        msgRequest.addProperty("type", "send_msg");
-        msgRequest.addProperty("message", message);
-        msgRequest.addProperty("sender", sender);
-        msgRequest.addProperty("receiver", receiver);
-        msgRequest.addProperty("token", token);
+        PublicKey key = getPubKey(receiver);
 
-        send(msgRequest.toString());
+        if (key == null) {
+            System.err.println("Key not found");
+
+        } else {
+            message = Crypto.cipher(message, key);
+
+            JsonObject msgRequest = new JsonObject();
+            msgRequest.addProperty("type", "send_msg");
+            msgRequest.addProperty("message", message);
+            msgRequest.addProperty("sender", sender);
+            msgRequest.addProperty("receiver", receiver);
+            msgRequest.addProperty("token", token);
+
+            send(msgRequest.toString());
+
+        }
     }
 
-    public ArrayList<Msg> msgHistory(String name1, String name2) throws InterruptedException {
+    private PublicKey getPubKey(String name) throws Exception {
+
+        JsonObject reqPubKey = new JsonObject();
+        reqPubKey.addProperty("type", "request_pub_key");
+        reqPubKey.addProperty("username", name);
+
+        send(reqPubKey.toString());
+        String response = waitForMessage();
+
+        JsonElement elem = JsonParser.parseString(response);
+        JsonObject object = elem.getAsJsonObject();
+        String stringKey = object.get("key").getAsString();
+
+        if (stringKey.equals("none")) {
+            System.err.println("Key not found");
+            return null;
+
+        } else {
+            byte[] keyBytes = Crypto.decoderHelper(stringKey);
+            return Crypto.bytesToKey(keyBytes);
+
+        }
+    }
+
+    public void savePrivateKey(PrivateKey key, String username) {
+
+        try (FileOutputStream out = new FileOutputStream(username + "_private.key")) {
+            out.write(key.getEncoded());
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Something went wrong with the writing of the file");
+        }
+    }
+
+    public PrivateKey readPrivateKey(String username) throws Exception {
+
+        try (FileInputStream in = new FileInputStream(username + "_private.key")) {
+            KeyFactory factory = KeyFactory.getInstance("RSA");
+            EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(in.readAllBytes());
+            return factory.generatePrivate(privKeySpec);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Something went wrong with the reading of the file");
+            return null;
+        }
+    }
+
+    public ArrayList<Msg> msgHistory(String name1, String name2) throws Exception {
 
         Gson gson = new Gson();
 
@@ -204,9 +274,13 @@ public class ChatClient extends WebSocketClient {
             Msg msg = gson.fromJson(elem, Msg.class);
             msgsList.add(msg);
             String sender = msg.getMsgSender();
-            String messageText = msg.getMsg();
+            String encryptedMessageText = msg.getMsg();
+            PrivateKey key = readPrivateKey(getUsername());
 
-            System.out.println(sender + ": " + messageText);
+            if (key != null) {
+                String messageText = Crypto.decipher(encryptedMessageText, readPrivateKey(getUsername()));
+                System.out.println(sender + ": " + messageText);
+            }
         }
 
         return msgsList;
@@ -226,5 +300,13 @@ public class ChatClient extends WebSocketClient {
 
     public String getToken() {
         return this.token;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

@@ -1,6 +1,7 @@
 package arch.joe;
 
 import java.net.URI;
+import java.security.KeyPair;
 import java.util.Scanner;
 
 import com.google.gson.JsonObject;
@@ -39,19 +40,25 @@ public class mainClient {
 
     private static void register(Scanner scanner, ChatClient c) throws Exception, InterruptedException {
         System.out.println("Register");
+        System.out.println("--------");
         System.out.print("Username: ");
         String name = scanner.nextLine();
         System.out.print("Password: ");
         String pass = scanner.nextLine();
         String salt = Crypto.makeSalt();
 
-        boolean response = c.registerRequest(name, Crypto.stringToHash(pass, salt), salt);
+        KeyPair keyPair = Crypto.makeKeyPair();
+        byte[] publicKey = keyPair.getPublic().getEncoded();
 
-        if (response) {
-            System.out.println("registered");
+        boolean response = c.registerRequest(name, Crypto.stringToHash(pass, salt), salt, publicKey);
+
+        if (!response) {
+            System.err.println("username unavailable");
 
         } else {
-            System.err.println("username unavailable");
+            System.out.println("registered");
+            c.setUsername(name);
+            c.savePrivateKey(keyPair.getPrivate(), name);
 
         }
     }
@@ -75,7 +82,7 @@ public class mainClient {
     }
 
     private static void message(Scanner scanner, ChatClient c, String name, JsonObject obj)
-            throws InterruptedException {
+            throws Exception {
         c.setToken(obj.get("token").getAsString());
         System.out.print("Enter username of the person you want to text: ");
         String receiver = scanner.nextLine();
@@ -100,6 +107,7 @@ public class mainClient {
                 if (message.equalsIgnoreCase("q")) {
                     System.out.println("goodbye!");
                     c.close();
+                    Thread.sleep(100);
                     System.exit(0);
 
                 } else {
