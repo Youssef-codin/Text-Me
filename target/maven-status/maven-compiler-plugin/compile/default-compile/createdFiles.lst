@@ -1,1 +1,9 @@
-arch/joe/Main.class
+arch/joe/app/Msg.class
+arch/joe/client/ChatListener.class
+arch/joe/client/ChatClient.class
+arch/joe/security/Auth.class
+arch/joe/server/ChatServer.class
+arch/joe/app/User.class
+arch/joe/db/Database.class
+arch/joe/mainClient.class
+arch/joe/security/Crypto.class
