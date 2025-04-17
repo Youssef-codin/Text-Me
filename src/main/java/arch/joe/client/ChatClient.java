@@ -120,15 +120,9 @@ public class ChatClient extends WebSocketClient {
             return null;
 
         } else {
-            this.loginRequest(name, Crypto.stringToHash(hashedPass, salt));
-            String login = this.waitForMessage();
+            JsonObject obj = this.checkPassword(name, Crypto.stringToHash(hashedPass, salt));
 
-            JsonElement jsonElement = JsonParser.parseString(login);
-            JsonObject obj = jsonElement.getAsJsonObject();
-
-            String auth = obj.get("authorized").getAsString();
-
-            if (auth.equals("f")) {
+            if (obj == null) {
                 return null;
             } else {
                 this.username = name;
@@ -137,13 +131,24 @@ public class ChatClient extends WebSocketClient {
         }
     }
 
-    private void loginRequest(String name, String pass) {
+    private JsonObject checkPassword(String name, String pass) throws Exception {
         JsonObject request = new JsonObject();
         request.addProperty("type", "login");
         request.addProperty("username", name);
         request.addProperty("password", pass);
 
         send(request.toString());
+        String login = this.waitForMessage();
+
+        JsonElement jsonElement = JsonParser.parseString(login);
+        JsonObject obj = jsonElement.getAsJsonObject();
+
+        String auth = obj.get("authorized").getAsString();
+        if (auth.equals("none")) {
+            return null;
+        } else {
+            return obj;
+        }
     }
 
     public void saltRequest(String name) {
