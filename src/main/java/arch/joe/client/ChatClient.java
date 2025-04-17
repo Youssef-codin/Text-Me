@@ -191,7 +191,7 @@ public class ChatClient extends WebSocketClient {
 
         } else {
             String salt = getSalt(name);
-            UserDao.changePassword(Crypto.stringToHash(pass, salt), name);
+            UserDao.changePassword(name, Crypto.stringToHash(pass, salt));
 
         }
     }
