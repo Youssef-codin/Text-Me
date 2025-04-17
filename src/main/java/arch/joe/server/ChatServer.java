@@ -6,11 +6,13 @@ package arch.joe.server;
 
 import java.io.IOException;
 
+import jakarta.websocket.CloseReason;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
+import jakarta.websocket.CloseReason.CloseCodes;
 import jakarta.websocket.server.ServerEndpoint;
 
 import java.util.ArrayList;
@@ -63,16 +65,38 @@ public class ChatServer {
 
     }
 
+    // type:
+    // username:
+    // password:
     @OnMessage
     public void onMsg(Session sesh, String msg) throws Exception {
 
-        JsonElement jsonElement = JsonParser.parseString(msg);
-        JsonObject obj = jsonElement.getAsJsonObject();
-        String type = obj.get("type").getAsString();
+        if (msg.length() > 10_000) {
+            System.err.println("Msg too big");
+            sesh.close(new CloseReason(CloseCodes.TOO_BIG, "Message too big."));
+            return;
 
-        // type:
-        // username:
-        // password:
+        }
+
+        JsonElement jsonElement = JsonParser.parseString(msg);
+
+        if (!jsonElement.isJsonObject()) {
+            System.err.println("Incorrect msg formatting");
+            sesh.close(new CloseReason(CloseCodes.CANNOT_ACCEPT, "Incorrectly formatted message"));
+            return;
+
+        }
+
+        JsonObject obj = jsonElement.getAsJsonObject();
+
+        if (!obj.has("type")) {
+            System.err.println("Incorrect msg formatting");
+            sesh.close(new CloseReason(CloseCodes.CANNOT_ACCEPT, "Incorrectly formatted message"));
+            return;
+
+        }
+
+        String type = obj.get("type").getAsString();
         switch (type) {
 
             case "login" -> loginRequest(sesh, obj);
@@ -83,7 +107,10 @@ public class ChatServer {
             case "user_there" -> userThere(sesh, obj);
             case "history_request" -> historyRequest(sesh, obj);
             case "request_pub_key" -> keyRequest(sesh, obj);
-            default -> System.err.println("no type");
+            default -> {
+                sesh.close(new CloseReason(CloseCodes.CANNOT_ACCEPT, "'Type' is empty"));
+                System.err.println("no type");
+            }
         }
     }
 
