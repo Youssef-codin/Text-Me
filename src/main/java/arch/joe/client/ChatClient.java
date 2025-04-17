@@ -144,7 +144,8 @@ public class ChatClient extends WebSocketClient {
         JsonObject obj = jsonElement.getAsJsonObject();
 
         String auth = obj.get("authorized").getAsString();
-        if (auth.equals("none")) {
+
+        if (auth.equals("f")) {
             return null;
         } else {
             return obj;
