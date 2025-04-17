@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import arch.joe.app.Msg;
+import arch.joe.db.UserDao;
 import arch.joe.security.Crypto;
 
 public class ChatClient extends WebSocketClient {
@@ -108,12 +109,7 @@ public class ChatClient extends WebSocketClient {
 
     public JsonObject login(String name, String hashedPass) throws Exception {
 
-        this.saltRequest(name);
-        String saltJson = this.waitForMessage();
-
-        JsonElement saltElement = JsonParser.parseString(saltJson);
-        JsonObject saltObj = saltElement.getAsJsonObject();
-        String salt = saltObj.get("salt").getAsString();
+        String salt = getSalt(name);
 
         if (salt.equals("none")) {
             System.out.println("username not found.");
@@ -131,11 +127,26 @@ public class ChatClient extends WebSocketClient {
         }
     }
 
-    private JsonObject checkPassword(String name, String pass) throws Exception {
+    private String getSalt(String name) throws InterruptedException {
+        JsonObject request = new JsonObject();
+        request.addProperty("type", "salt_request");
+        request.addProperty("username", name);
+        send(request.toString());
+
+        String saltJson = this.waitForMessage();
+
+        JsonElement saltElement = JsonParser.parseString(saltJson);
+        JsonObject saltObj = saltElement.getAsJsonObject();
+        String salt = saltObj.get("salt").getAsString();
+
+        return salt;
+    }
+
+    private JsonObject checkPassword(String name, String hashedPass) throws Exception {
         JsonObject request = new JsonObject();
         request.addProperty("type", "login");
         request.addProperty("username", name);
-        request.addProperty("password", pass);
+        request.addProperty("password", hashedPass);
 
         send(request.toString());
         String login = this.waitForMessage();
@@ -152,11 +163,37 @@ public class ChatClient extends WebSocketClient {
         }
     }
 
-    public void saltRequest(String name) {
+    private boolean checkPasswordNoToken(String name, String hashedPass) throws Exception {
         JsonObject request = new JsonObject();
-        request.addProperty("type", "salt_request");
+        request.addProperty("type", "check_pass");
         request.addProperty("username", name);
+        request.addProperty("password", hashedPass);
+
         send(request.toString());
+        String login = this.waitForMessage();
+
+        JsonElement jsonElement = JsonParser.parseString(login);
+        JsonObject obj = jsonElement.getAsJsonObject();
+
+        String auth = obj.get("authorized").getAsString();
+
+        if (auth.equals("f")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public void changePassword(String name, String pass) throws Exception {
+
+        if (!checkPasswordNoToken(name, pass)) {
+            System.err.println("Wrong password");
+
+        } else {
+            String salt = getSalt(name);
+            UserDao.changePassword(Crypto.stringToHash(pass, salt), name);
+
+        }
     }
 
     public boolean userThere(String name) throws InterruptedException {

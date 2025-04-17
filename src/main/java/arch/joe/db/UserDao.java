@@ -37,7 +37,7 @@ public class UserDao {
             return true;
         } catch (SQLException e) {
             if (e.getErrorCode() == 19) {
-                System.out.println(name + " is already taken.");
+                System.err.println(name + " is already taken.");
                 return false;
             } else {
                 e.printStackTrace();
@@ -72,6 +72,20 @@ public class UserDao {
             PreparedStatement ps = conn.prepareStatement("UPDATE users SET " + column + " = ? WHERE usr_name = ?");
             ps.setString(1, newThing);
             ps.setString(2, name);
+
+            int columns = ps.executeUpdate();
+            System.out.println("Changed: " + columns);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void changePassword(String name, String newHashedPassword) {
+        try (Connection conn = Database.connect()) {
+            PreparedStatement ps = conn.prepareStatement("UPDATE users SET usr_password = ? WHERE usr_name = ?");
+            ps.setString(1, newHashedPassword);
+            ps.setString(2, name);
+
             int columns = ps.executeUpdate();
             System.out.println("Changed: " + columns);
         } catch (SQLException e) {

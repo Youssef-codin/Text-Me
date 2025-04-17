@@ -76,6 +76,7 @@ public class ChatServer {
         switch (type) {
 
             case "login" -> loginRequest(sesh, obj);
+            case "check_pass" -> checkPass(sesh, obj);
             case "salt_request" -> saltRequest(sesh, obj);
             case "send_msg" -> msgRequest(sesh, obj);
             case "register" -> registerRequest(sesh, obj);
@@ -154,6 +155,32 @@ public class ChatServer {
         } else {
             response.addProperty("authorized", "f");
             response.addProperty("token", "none");
+        }
+
+        System.out.println("sending: " + response);
+        sesh.getAsyncRemote().sendText(response.toString());
+    }
+
+    private void checkPass(Session sesh, JsonObject obj) throws Exception {
+        String username = obj.get("username").getAsString();
+        String password = obj.get("password").getAsString();
+
+        User correctData = UserDao.getUser(username);
+        String correctPass = correctData.getPassword();
+
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "check_pass");
+
+        // type: login
+        // authorized: t or f
+        // token: token or none
+        if (correctPass.equals(password)) {
+
+            addToClients(sesh, username);
+            response.addProperty("authorized", "t");
+
+        } else {
+            response.addProperty("authorized", "f");
         }
 
         System.out.println("sending: " + response);
