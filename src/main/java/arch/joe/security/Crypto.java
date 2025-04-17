@@ -39,13 +39,6 @@ public class Crypto {
         return encoderHelper(salt);
     }
 
-    public static KeyPair makeKeyPair() throws Exception {
-
-        KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
-        gen.initialize(2048);
-        return gen.generateKeyPair();
-
-    }
 
     public static String stringToHash(String password, String salt) throws Exception {
 
@@ -56,6 +49,14 @@ public class Crypto {
 
         byte[] hashBytes = factory.generateSecret(spec).getEncoded();
         return encoderHelper(hashBytes);
+    }
+
+    public static KeyPair makeKeyPair() throws Exception {
+
+        KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+        gen.initialize(2048);
+        return gen.generateKeyPair();
+
     }
 
     public static String cipher(String msg, PublicKey key) throws Exception {

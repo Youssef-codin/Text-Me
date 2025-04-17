@@ -38,7 +38,7 @@ public class mainClient {
         }
     }
 
-    private static void register(Scanner scanner, ChatClient c) throws Exception, InterruptedException {
+    private static void register(Scanner scanner, ChatClient c) throws Exception {
         System.out.println("Register");
         System.out.println("--------");
         System.out.print("Username: ");
@@ -63,7 +63,7 @@ public class mainClient {
         }
     }
 
-    private static void login(Scanner scanner, ChatClient c) throws Exception, InterruptedException {
+    private static void login(Scanner scanner, ChatClient c) throws Exception {
         System.out.print("Username: ");
         String name = scanner.nextLine();
         System.out.print("Password: ");
