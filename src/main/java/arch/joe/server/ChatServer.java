@@ -1,7 +1,3 @@
-/*
- * TO DO message history
- */
-
 package arch.joe.server;
 
 import java.io.IOException;
@@ -55,8 +51,15 @@ public class ChatServer {
     }
 
     private void removeSeshAndName(Session sesh, String name) {
+        if (sesh == null) {
+            return;
+        }
+
         seshIDToName.remove(sesh.getId());
-        nameToSesh.remove(name);
+        if (name != null) {
+            nameToSesh.remove(name);
+
+        }
     }
 
     @OnOpen
@@ -100,13 +103,13 @@ public class ChatServer {
         switch (type) {
 
             case "login" -> loginRequest(sesh, obj);
-            case "check_pass" -> checkPass(sesh, obj);
             case "salt_request" -> saltRequest(sesh, obj);
             case "send_msg" -> msgRequest(sesh, obj);
             case "register" -> registerRequest(sesh, obj);
             case "user_there" -> userThere(sesh, obj);
             case "history_request" -> historyRequest(sesh, obj);
             case "request_pub_key" -> keyRequest(sesh, obj);
+            case "change_password" -> changePass(sesh, obj);
             default -> {
                 sesh.close(new CloseReason(CloseCodes.CANNOT_ACCEPT, "'Type' is empty"));
                 System.err.println("no type");
@@ -170,9 +173,6 @@ public class ChatServer {
         JsonObject response = new JsonObject();
         response.addProperty("type", "login");
 
-        // type: login
-        // authorized: t or f
-        // token: token or none
         if (correctPass.equals(password)) {
 
             addToClients(sesh, username);
@@ -188,30 +188,18 @@ public class ChatServer {
         sesh.getAsyncRemote().sendText(response.toString());
     }
 
-    private void checkPass(Session sesh, JsonObject obj) throws Exception {
-        String username = obj.get("username").getAsString();
-        String password = obj.get("password").getAsString();
+    private boolean checkPass(String username, String password) throws Exception {
 
         User correctData = UserDao.getUser(username);
         String correctPass = correctData.getPassword();
 
-        JsonObject response = new JsonObject();
-        response.addProperty("type", "check_pass");
-
-        // type: login
-        // authorized: t or f
-        // token: token or none
-        if (correctPass.equals(password)) {
-
-            addToClients(sesh, username);
-            response.addProperty("authorized", "t");
+        if (!correctPass.equals(password)) {
+            return false;
 
         } else {
-            response.addProperty("authorized", "f");
-        }
+            return true;
 
-        System.out.println("sending: " + response);
-        sesh.getAsyncRemote().sendText(response.toString());
+        }
     }
 
     private void saltRequest(Session sesh, JsonObject obj) throws Exception {
@@ -269,6 +257,28 @@ public class ChatServer {
             return true;
 
         }
+    }
+
+    private void changePass(Session sesh, JsonObject obj) throws Exception {
+        String username = obj.get("username").getAsString();
+        String oldPass = obj.get("old_password").getAsString();
+        String newPass = obj.get("new_password").getAsString();
+
+        boolean check = checkPass(username, oldPass);
+
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "change_password");
+
+        if (!check) {
+            response.addProperty("successful", "f");
+
+        } else {
+            UserDao.changePassword(username, newPass);
+            response.addProperty("successful", "t");
+
+        }
+
+        sesh.getAsyncRemote().sendText(response.toString());
     }
 
     // message: message

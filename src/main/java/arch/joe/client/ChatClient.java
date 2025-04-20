@@ -25,7 +25,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import arch.joe.app.Msg;
-import arch.joe.db.UserDao;
 import arch.joe.security.Crypto;
 
 public class ChatClient extends WebSocketClient {
@@ -81,7 +80,7 @@ public class ChatClient extends WebSocketClient {
     @Override
     public void onError(Exception e) {
         e.printStackTrace();
-        System.exit(0);
+        this.close();
         // if the error is fatal then onClose will be called additionally
     }
 
@@ -109,7 +108,7 @@ public class ChatClient extends WebSocketClient {
 
     public JsonObject login(String name, String hashedPass) throws Exception {
 
-        String salt = getSalt(name);
+        String salt = this.getSalt(name);
 
         if (salt.equals("none")) {
             System.out.println("username not found.");
@@ -142,6 +141,32 @@ public class ChatClient extends WebSocketClient {
         return salt;
     }
 
+    public boolean changePassword(String name, String oldPass, String newPass) throws Exception {
+
+        String salt = getSalt(name);
+
+        JsonObject request = new JsonObject();
+        request.addProperty("type", "change_password");
+        request.addProperty("username", name);
+        request.addProperty("old_password", Crypto.stringToHash(oldPass, salt));
+        request.addProperty("new_password", Crypto.stringToHash(newPass, salt));
+
+        send(request.toString());
+        String response = this.waitForMessage();
+
+        JsonElement elem = JsonParser.parseString(response);
+        JsonObject object = elem.getAsJsonObject();
+        String successful = object.get("successful").getAsString();
+
+        if (successful.equals("f")) {
+            return false;
+
+        } else {
+            return true;
+
+        }
+    }
+
     private JsonObject checkPassword(String name, String hashedPass) throws Exception {
         JsonObject request = new JsonObject();
         request.addProperty("type", "login");
@@ -160,39 +185,6 @@ public class ChatClient extends WebSocketClient {
             return null;
         } else {
             return obj;
-        }
-    }
-
-    private boolean checkPasswordNoToken(String name, String hashedPass) throws Exception {
-        JsonObject request = new JsonObject();
-        request.addProperty("type", "check_pass");
-        request.addProperty("username", name);
-        request.addProperty("password", hashedPass);
-
-        send(request.toString());
-        String login = this.waitForMessage();
-
-        JsonElement jsonElement = JsonParser.parseString(login);
-        JsonObject obj = jsonElement.getAsJsonObject();
-
-        String auth = obj.get("authorized").getAsString();
-
-        if (auth.equals("f")) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public void changePassword(String name, String pass) throws Exception {
-
-        if (!checkPasswordNoToken(name, pass)) {
-            System.err.println("Wrong password");
-
-        } else {
-            String salt = getSalt(name);
-            UserDao.changePassword(name, Crypto.stringToHash(pass, salt));
-
         }
     }
 
@@ -321,7 +313,7 @@ public class ChatClient extends WebSocketClient {
             PrivateKey key = readPrivateKey(getUsername());
 
             if (key != null) {
-                String messageText = Crypto.decipher(encryptedMessageText, readPrivateKey(getUsername()));
+                String messageText = Crypto.decipher(encryptedMessageText, key);
                 System.out.println(sender + ": " + messageText);
             }
         }
