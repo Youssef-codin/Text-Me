@@ -24,17 +24,42 @@ public class mainClient {
 
         while (true) {
 
-            System.out.print("Login or register (1,2): ");
+            System.out.print("Login, register, change password, quit (1,2,3,0): ");
             int input = scanner.nextInt();
             scanner.nextLine();
 
-            if (input == 1) {
-                login(scanner, c);
-
-            } else {
-                register(scanner, c);
+            switch (input) {
+                case 1 -> login(scanner, c);
+                case 2 -> register(scanner, c);
+                case 3 -> changePass(scanner, c);
+                case 0 -> {
+                    disconnect(c);
+                }
+                default -> System.err.println("choose a valid option");
 
             }
+        }
+    }
+
+    private static void disconnect(ChatClient c) {
+        c.close();
+        System.exit(0);
+    }
+
+    private static void changePass(Scanner scanner, ChatClient c) throws Exception {
+
+        System.out.print("Username: ");
+        String name = scanner.nextLine();
+        System.out.print("Old password: ");
+        String oldPass = scanner.nextLine();
+        System.out.print("New password: ");
+        String newPass = scanner.nextLine();
+
+        if (!c.changePassword(name, oldPass, newPass)) {
+            System.err.println("Wrong password");
+
+        } else {
+            System.out.println("Password changed successfully");
         }
     }
 
@@ -73,7 +98,6 @@ public class mainClient {
 
         if (obj == null) {
             System.out.println("Bad login.");
-            System.exit(0);
 
         } else {
             message(scanner, c, name, obj);
@@ -106,9 +130,7 @@ public class mainClient {
 
                 if (message.equalsIgnoreCase("q")) {
                     System.out.println("goodbye!");
-                    c.close();
-                    Thread.sleep(100);
-                    System.exit(0);
+                    disconnect(c);
 
                 } else {
                     Msg msg = new Msg(message, name, receiver);

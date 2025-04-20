@@ -1,16 +1,14 @@
-/*
- * TO DO message history
- */
-
 package arch.joe.server;
 
 import java.io.IOException;
 
+import jakarta.websocket.CloseReason;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
+import jakarta.websocket.CloseReason.CloseCodes;
 import jakarta.websocket.server.ServerEndpoint;
 
 import java.util.ArrayList;
@@ -53,8 +51,15 @@ public class ChatServer {
     }
 
     private void removeSeshAndName(Session sesh, String name) {
+        if (sesh == null) {
+            return;
+        }
+
         seshIDToName.remove(sesh.getId());
-        nameToSesh.remove(name);
+        if (name != null) {
+            nameToSesh.remove(name);
+
+        }
     }
 
     @OnOpen
@@ -63,16 +68,38 @@ public class ChatServer {
 
     }
 
+    // type:
+    // username:
+    // password:
     @OnMessage
     public void onMsg(Session sesh, String msg) throws Exception {
 
-        JsonElement jsonElement = JsonParser.parseString(msg);
-        JsonObject obj = jsonElement.getAsJsonObject();
-        String type = obj.get("type").getAsString();
+        if (msg.length() > 10_000) {
+            System.err.println("Msg too big");
+            sesh.close(new CloseReason(CloseCodes.TOO_BIG, "Message too big."));
+            return;
 
-        // type:
-        // username:
-        // password:
+        }
+
+        JsonElement jsonElement = JsonParser.parseString(msg);
+
+        if (!jsonElement.isJsonObject()) {
+            System.err.println("Incorrect msg formatting");
+            sesh.close(new CloseReason(CloseCodes.CANNOT_ACCEPT, "Incorrectly formatted message"));
+            return;
+
+        }
+
+        JsonObject obj = jsonElement.getAsJsonObject();
+
+        if (!obj.has("type")) {
+            System.err.println("Incorrect msg formatting");
+            sesh.close(new CloseReason(CloseCodes.CANNOT_ACCEPT, "Incorrectly formatted message"));
+            return;
+
+        }
+
+        String type = obj.get("type").getAsString();
         switch (type) {
 
             case "login" -> loginRequest(sesh, obj);
@@ -82,7 +109,11 @@ public class ChatServer {
             case "user_there" -> userThere(sesh, obj);
             case "history_request" -> historyRequest(sesh, obj);
             case "request_pub_key" -> keyRequest(sesh, obj);
-            default -> System.err.println("no type");
+            case "change_password" -> changePass(sesh, obj);
+            default -> {
+                sesh.close(new CloseReason(CloseCodes.CANNOT_ACCEPT, "'Type' is empty"));
+                System.err.println("no type");
+            }
         }
     }
 
@@ -142,9 +173,6 @@ public class ChatServer {
         JsonObject response = new JsonObject();
         response.addProperty("type", "login");
 
-        // type: login
-        // authorized: t or f
-        // token: token or none
         if (correctPass.equals(password)) {
 
             addToClients(sesh, username);
@@ -158,6 +186,20 @@ public class ChatServer {
 
         System.out.println("sending: " + response);
         sesh.getAsyncRemote().sendText(response.toString());
+    }
+
+    private boolean checkPass(String username, String password) throws Exception {
+
+        User correctData = UserDao.getUser(username);
+        String correctPass = correctData.getPassword();
+
+        if (!correctPass.equals(password)) {
+            return false;
+
+        } else {
+            return true;
+
+        }
     }
 
     private void saltRequest(Session sesh, JsonObject obj) throws Exception {
@@ -215,6 +257,28 @@ public class ChatServer {
             return true;
 
         }
+    }
+
+    private void changePass(Session sesh, JsonObject obj) throws Exception {
+        String username = obj.get("username").getAsString();
+        String oldPass = obj.get("old_password").getAsString();
+        String newPass = obj.get("new_password").getAsString();
+
+        boolean check = checkPass(username, oldPass);
+
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "change_password");
+
+        if (!check) {
+            response.addProperty("successful", "f");
+
+        } else {
+            UserDao.changePassword(username, newPass);
+            response.addProperty("successful", "t");
+
+        }
+
+        sesh.getAsyncRemote().sendText(response.toString());
     }
 
     // message: message

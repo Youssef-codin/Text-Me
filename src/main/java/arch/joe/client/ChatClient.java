@@ -80,7 +80,7 @@ public class ChatClient extends WebSocketClient {
     @Override
     public void onError(Exception e) {
         e.printStackTrace();
-        System.exit(0);
+        this.close();
         // if the error is fatal then onClose will be called additionally
     }
 
@@ -108,27 +108,16 @@ public class ChatClient extends WebSocketClient {
 
     public JsonObject login(String name, String hashedPass) throws Exception {
 
-        this.saltRequest(name);
-        String saltJson = this.waitForMessage();
-
-        JsonElement saltElement = JsonParser.parseString(saltJson);
-        JsonObject saltObj = saltElement.getAsJsonObject();
-        String salt = saltObj.get("salt").getAsString();
+        String salt = this.getSalt(name);
 
         if (salt.equals("none")) {
             System.out.println("username not found.");
             return null;
 
         } else {
-            this.loginRequest(name, Crypto.stringToHash(hashedPass, salt));
-            String login = this.waitForMessage();
+            JsonObject obj = this.checkPassword(name, Crypto.stringToHash(hashedPass, salt));
 
-            JsonElement jsonElement = JsonParser.parseString(login);
-            JsonObject obj = jsonElement.getAsJsonObject();
-
-            String auth = obj.get("authorized").getAsString();
-
-            if (auth.equals("f")) {
+            if (obj == null) {
                 return null;
             } else {
                 this.username = name;
@@ -137,20 +126,66 @@ public class ChatClient extends WebSocketClient {
         }
     }
 
-    private void loginRequest(String name, String pass) {
-        JsonObject request = new JsonObject();
-        request.addProperty("type", "login");
-        request.addProperty("username", name);
-        request.addProperty("password", pass);
-
-        send(request.toString());
-    }
-
-    public void saltRequest(String name) {
+    private String getSalt(String name) throws InterruptedException {
         JsonObject request = new JsonObject();
         request.addProperty("type", "salt_request");
         request.addProperty("username", name);
         send(request.toString());
+
+        String saltJson = this.waitForMessage();
+
+        JsonElement saltElement = JsonParser.parseString(saltJson);
+        JsonObject saltObj = saltElement.getAsJsonObject();
+        String salt = saltObj.get("salt").getAsString();
+
+        return salt;
+    }
+
+    public boolean changePassword(String name, String oldPass, String newPass) throws Exception {
+
+        String salt = getSalt(name);
+
+        JsonObject request = new JsonObject();
+        request.addProperty("type", "change_password");
+        request.addProperty("username", name);
+        request.addProperty("old_password", Crypto.stringToHash(oldPass, salt));
+        request.addProperty("new_password", Crypto.stringToHash(newPass, salt));
+
+        send(request.toString());
+        String response = this.waitForMessage();
+
+        JsonElement elem = JsonParser.parseString(response);
+        JsonObject object = elem.getAsJsonObject();
+        String successful = object.get("successful").getAsString();
+
+        if (successful.equals("f")) {
+            return false;
+
+        } else {
+            return true;
+
+        }
+    }
+
+    private JsonObject checkPassword(String name, String hashedPass) throws Exception {
+        JsonObject request = new JsonObject();
+        request.addProperty("type", "login");
+        request.addProperty("username", name);
+        request.addProperty("password", hashedPass);
+
+        send(request.toString());
+        String login = this.waitForMessage();
+
+        JsonElement jsonElement = JsonParser.parseString(login);
+        JsonObject obj = jsonElement.getAsJsonObject();
+
+        String auth = obj.get("authorized").getAsString();
+
+        if (auth.equals("f")) {
+            return null;
+        } else {
+            return obj;
+        }
     }
 
     public boolean userThere(String name) throws InterruptedException {
@@ -278,7 +313,7 @@ public class ChatClient extends WebSocketClient {
             PrivateKey key = readPrivateKey(getUsername());
 
             if (key != null) {
-                String messageText = Crypto.decipher(encryptedMessageText, readPrivateKey(getUsername()));
+                String messageText = Crypto.decipher(encryptedMessageText, key);
                 System.out.println(sender + ": " + messageText);
             }
         }
