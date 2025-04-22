@@ -1,3 +1,5 @@
+// Add token to a file
+
 package arch.joe.client;
 
 import java.io.FileInputStream;
@@ -84,10 +86,13 @@ public class ChatClient extends WebSocketClient {
         // if the error is fatal then onClose will be called additionally
     }
 
-    public boolean registerRequest(String name, String hashedPass, String salt, byte[] pubKey) throws Exception {
+    public boolean registerRequest(String name, String email, String hashedPass, String salt, byte[] pubKey)
+            throws Exception {
+
         JsonObject request = new JsonObject();
         request.addProperty("type", "register");
         request.addProperty("username", name);
+        request.addProperty("email", email);
         request.addProperty("password", hashedPass);
         request.addProperty("salt", salt);
         request.addProperty("key", Crypto.encoderHelper(pubKey));
@@ -119,6 +124,7 @@ public class ChatClient extends WebSocketClient {
 
             if (obj == null) {
                 return null;
+
             } else {
                 this.username = name;
                 return obj;
@@ -323,25 +329,31 @@ public class ChatClient extends WebSocketClient {
 
     public String waitForMessage() throws InterruptedException {
         return messageQueue.take();
+
     }
 
     public String waitForChat() throws InterruptedException {
         return chatQueue.take();
+
     }
 
     public void setToken(String token) {
         this.token = token;
+
     }
 
     public String getToken() {
         return this.token;
+
     }
 
     public String getUsername() {
         return this.username;
+
     }
 
     public void setUsername(String username) {
         this.username = username;
+
     }
 }

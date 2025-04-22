@@ -2,6 +2,7 @@ package arch.joe.security;
 
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.Properties;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -9,6 +10,9 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.bastiaanjansen.otp.HMACAlgorithm;
+import com.bastiaanjansen.otp.HOTPGenerator;
+import com.bastiaanjansen.otp.SecretGenerator;
 
 public class Auth {
 
@@ -59,5 +63,23 @@ public class Auth {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public byte[] generateSecret() {
+        return SecretGenerator.generate();
+    }
+
+    public String generateOTP(String secret, int counter) {
+
+        HOTPGenerator hotp = new HOTPGenerator.Builder(secret).withAlgorithm(HMACAlgorithm.SHA256).build();
+        String otp = hotp.generate(counter);
+
+        return otp;
+    }
+
+    public void sendOTP() {
+        Properties prop = new Properties();
+        prop.put("", true);
+
     }
 }

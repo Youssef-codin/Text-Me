@@ -4,13 +4,15 @@ public class User {
 
     private final String name;
     private final String password;
+    private final String email;
     private final String salt;
     private final byte[] pubKey;
 
-    public User(String name, String password, String salt, byte[] pubKey) throws Exception {
+    public User(String name, String email, String password, String salt, byte[] pubKey) throws Exception {
 
         this.name = name;
         this.password = password;
+        this.email = email;
         this.salt = salt;
         this.pubKey = pubKey;
 
@@ -29,6 +31,14 @@ public class User {
     }
 
     public byte[] getKey() {
+        return pubKey;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public byte[] getPubKey() {
         return pubKey;
     }
 }
