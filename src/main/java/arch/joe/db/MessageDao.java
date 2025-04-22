@@ -29,8 +29,8 @@ public class MessageDao {
             ps.setString(3, message);
             ps.setLong(4, time);
 
-            int columns = ps.executeUpdate();
-            System.out.println("Changed: " + columns);
+            int rows = ps.executeUpdate();
+            System.out.println("Changed: " + rows);
 
         } catch (SQLException e) {
             e.printStackTrace();

@@ -20,24 +20,27 @@ public class UserDao {
     public static boolean insertUser(User usr) {
         String name = usr.getName();
         String pass = usr.getPassword();
+        String email = usr.getEmail();
         String salt = usr.getSalt();
         byte[] key = usr.getKey();
 
         try (Connection conn = Database.connect()) {
             PreparedStatement ps = conn
                     .prepareStatement(
-                            "INSERT INTO users(usr_name, usr_password, usr_salt, usr_key) values(?, ?, ?, ?)");
+                            "INSERT INTO users(usr_name, usr_email, usr_password, usr_salt, usr_key) values(?, ?, ?, ?, ?)");
             ps.setString(1, name);
-            ps.setString(2, pass);
-            ps.setString(3, salt);
-            ps.setBytes(4, key);
+            ps.setString(2, email);
+            ps.setString(3, pass);
+            ps.setString(4, salt);
+            ps.setBytes(5, key);
 
-            int columns = ps.executeUpdate();
-            System.out.println("Changed: " + columns);
+            int rows = ps.executeUpdate();
+            System.out.println("Changed: " + rows);
             return true;
+
         } catch (SQLException e) {
             if (e.getErrorCode() == 19) {
-                System.err.println(name + " is already taken.");
+                System.err.println("Username or email is already taken.");
                 return false;
             } else {
                 e.printStackTrace();
@@ -56,8 +59,11 @@ public class UserDao {
                 System.out.println("Username not found.");
                 return null;
             } else {
-                return new User(results.getString("usr_name"), results.getString("usr_password"),
-                        results.getString("usr_salt"), results.getBytes("usr_key"));
+                return new User(results.getString("usr_name"),
+                        results.getString("usr_email"),
+                        results.getString("usr_password"),
+                        results.getString("usr_salt"),
+                        results.getBytes("usr_key"));
             }
 
         } catch (SQLException e) {
@@ -67,18 +73,19 @@ public class UserDao {
     }
 
     // need to make this safer
-    public static void updateUser(String column, String newThing, String name) {
-        try (Connection conn = Database.connect()) {
-            PreparedStatement ps = conn.prepareStatement("UPDATE users SET " + column + " = ? WHERE usr_name = ?");
-            ps.setString(1, newThing);
-            ps.setString(2, name);
-
-            int columns = ps.executeUpdate();
-            System.out.println("Changed: " + columns);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    // public static void updateUser(String column, String newThing, String name) {
+    // try (Connection conn = Database.connect()) {
+    // PreparedStatement ps = conn.prepareStatement("UPDATE users SET " + column + "
+    // = ? WHERE usr_name = ?");
+    // ps.setString(1, newThing);
+    // ps.setString(2, name);
+    //
+    // int rows = ps.executeUpdate();
+    // System.out.println("Changed: " + rows);
+    // } catch (SQLException e) {
+    // e.printStackTrace();
+    // }
+    // }
 
     public static void changePassword(String name, String newHashedPassword) {
         try (Connection conn = Database.connect()) {
@@ -86,8 +93,8 @@ public class UserDao {
             ps.setString(1, newHashedPassword);
             ps.setString(2, name);
 
-            int columns = ps.executeUpdate();
-            System.out.println("Changed: " + columns);
+            int rows = ps.executeUpdate();
+            System.out.println("Changed: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -97,8 +104,8 @@ public class UserDao {
         try (Connection conn = Database.connect()) {
             PreparedStatement ps = conn.prepareStatement("DELETE FROM users WHERE usr_name = ?");
             ps.setString(1, name);
-            int columns = ps.executeUpdate();
-            System.out.println("Changed: " + columns);
+            int rows = ps.executeUpdate();
+            System.out.println("Changed: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
         }

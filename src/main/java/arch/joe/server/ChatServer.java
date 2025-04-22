@@ -2,6 +2,8 @@ package arch.joe.server;
 
 import java.io.IOException;
 
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -14,11 +16,15 @@ import jakarta.websocket.server.ServerEndpoint;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.glassfish.tyrus.server.Server;
 
+import com.bastiaanjansen.otp.HMACAlgorithm;
+import com.bastiaanjansen.otp.HOTPGenerator;
+import com.bastiaanjansen.otp.SecretGenerator;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -137,30 +143,53 @@ public class ChatServer {
     // username: name
     // password: hashedPass
     // salt: salt
+    // email: email
     private void registerRequest(Session sesh, JsonObject obj) throws Exception {
+
         String username = obj.get("username").getAsString();
         String password = obj.get("password").getAsString();
+        String email = obj.get("email").getAsString();
         String salt = obj.get("salt").getAsString();
         String stringKey = obj.get("key").getAsString();
         byte[] key = Crypto.decoderHelper(stringKey);
 
-        User usr = new User(username, password, salt, key);
-        boolean available = UserDao.insertUser(usr);
-
         JsonObject response = new JsonObject();
         response.addProperty("type", "register_request");
 
-        if (!available) {
-            System.err.println("username unavailable");
+        boolean validEmail = isValidEmailAddress(email);
+
+        if (!validEmail) {
+            System.err.println("invalid Email");
             response.addProperty("successful", "false");
 
         } else {
-            System.out.println("username available");
-            response.addProperty("successful", "true");
 
+            User usr = new User(username, email, password, salt, key);
+            boolean available = UserDao.insertUser(usr);
+
+            if (!available) {
+                System.err.println("username or email unavailable");
+                response.addProperty("successful", "false");
+
+            } else {
+                System.out.println("username available");
+                response.addProperty("successful", "true");
+
+            }
         }
 
         sesh.getAsyncRemote().sendText(response.toString());
+    }
+
+    private static boolean isValidEmailAddress(String email) {
+        boolean result = true;
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            result = false;
+        }
+        return result;
     }
 
     private void loginRequest(Session sesh, JsonObject obj) throws Exception {
@@ -247,7 +276,7 @@ public class ChatServer {
     private boolean checkToken(Session sesh, JsonObject obj, String sender) {
 
         String token = obj.get("token").getAsString();
-        String tokenName = Auth.verifyToken(token); // also verifies the token
+        String tokenName = Auth.verifyToken(token);
         String client = seshIDToName.get(sesh.getId());
 
         if (tokenName == null || !(sender.equals(tokenName) && client.equals(tokenName))) {
@@ -317,7 +346,7 @@ public class ChatServer {
             Session receiverOnline = nameToSesh.get(msg.getMsgReceiver());
 
             for (HashMap.Entry<String, Session> name : nameToSesh.entrySet()) {
-                System.out.println(name.getKey() + " => " + name.getValue().getId());
+                System.out.println(name.getKey() + " -> " + name.getValue().getId());
             }
 
             if (receiverOnline == null) {

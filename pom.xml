@@ -95,6 +95,12 @@
       <artifactId>angus-mail</artifactId>
       <version>2.0.1</version>
     </dependency>
+    <!-- OTP generator-->
+    <dependency>
+      <groupId>com.github.bastiaanjansen</groupId>
+      <artifactId>otp-java</artifactId>
+      <version>2.1.0</version>
+    </dependency>
   </dependencies>
 
   <build>

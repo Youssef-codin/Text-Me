@@ -46,11 +46,15 @@ public class ChatListener implements Runnable {
         } else {
             String sender = message.get("sender").getAsString();
             String encryptedMessageText = message.get("message").getAsString();
+
             PrivateKey key = c.readPrivateKey(c.getUsername());
+
             if (key != null) {
                 String messageText = Crypto.decipher(encryptedMessageText, key);
                 System.out.println(sender + ": " + messageText);
 
+            } else {
+                // log user out and make user log back in to get a new token
             }
         }
     }

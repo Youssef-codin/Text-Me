@@ -66,19 +66,21 @@ public class mainClient {
     private static void register(Scanner scanner, ChatClient c) throws Exception {
         System.out.println("Register");
         System.out.println("--------");
+        System.out.print("email: ");
+        String email = scanner.nextLine();
         System.out.print("Username: ");
         String name = scanner.nextLine();
         System.out.print("Password: ");
         String pass = scanner.nextLine();
-        String salt = Crypto.makeSalt();
 
+        String salt = Crypto.makeSalt();
         KeyPair keyPair = Crypto.makeKeyPair();
         byte[] publicKey = keyPair.getPublic().getEncoded();
 
-        boolean response = c.registerRequest(name, Crypto.stringToHash(pass, salt), salt, publicKey);
+        boolean response = c.registerRequest(name, email, Crypto.stringToHash(pass, salt), salt, publicKey);
 
         if (!response) {
-            System.err.println("username unavailable");
+            System.err.println("username or email unavailable");
 
         } else {
             System.out.println("registered");
@@ -118,12 +120,13 @@ public class mainClient {
 
         } else {
 
+            System.out.println("send q at anytime to quit the chat.");
+            c.setCurrentReceiver(receiver);
             c.msgHistory(name, receiver);
             Thread thread = new Thread(new ChatListener(c));
             thread.start();
             String message;
             Thread.sleep(100);
-            System.out.println("press q and anytime to quit the chat.");
 
             while (true) {
                 message = scanner.nextLine();

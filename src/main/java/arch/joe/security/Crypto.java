@@ -39,7 +39,6 @@ public class Crypto {
         return encoderHelper(salt);
     }
 
-
     public static String stringToHash(String password, String salt) throws Exception {
 
         byte[] saltBytes = decoderHelper(salt);
@@ -80,7 +79,7 @@ public class Crypto {
         return new String(decryptedBytes, StandardCharsets.UTF_8);
     }
 
-    public static PublicKey bytesToKey(byte[] bytes) throws Exception {
+    public static PublicKey bytesToPublicKey(byte[] bytes) throws Exception {
 
         KeyFactory keyFac = KeyFactory.getInstance("RSA");
         EncodedKeySpec publickeyspec = new X509EncodedKeySpec(bytes);
@@ -98,7 +97,7 @@ public class Crypto {
         byte[] bytes = pubkey.getEncoded();
 
         // recreate instance
-        PublicKey pubkey2 = bytesToKey(bytes);
+        PublicKey pubkey2 = bytesToPublicKey(bytes);
 
         String ciphered = cipher("blah blah blah", pubkey2);
         String deciphered = decipher(ciphered, privkey);

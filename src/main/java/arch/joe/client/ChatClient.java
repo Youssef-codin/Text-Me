@@ -1,8 +1,4 @@
-/*
- * Stuff to fix/add:
- * some sort of chat session to fix duplication msg bug
- *
- */
+// Add token to a file
 
 package arch.joe.client;
 
@@ -39,6 +35,7 @@ public class ChatClient extends WebSocketClient {
     private final BlockingQueue<String> chatQueue = new LinkedBlockingQueue<>();
     private String token;
     private String username;
+    private String currentReceiver;
 
     public ChatClient(URI serverUri, Draft draft) {
         super(serverUri, draft);
@@ -69,9 +66,18 @@ public class ChatClient extends WebSocketClient {
         String type = obj.get("type").getAsString();
 
         if (type.equals("receive_msg")) {
-            chatQueue.add(message);
+
+            String sender = obj.get("sender").getAsString();
+
+            if (this.currentReceiver != null) {
+                if (this.currentReceiver.equals(sender)) {
+                    chatQueue.add(message);
+                }
+            }
+
         } else {
             messageQueue.add(message);
+
         }
     }
 
@@ -90,10 +96,13 @@ public class ChatClient extends WebSocketClient {
         // if the error is fatal then onClose will be called additionally
     }
 
-    public boolean registerRequest(String name, String hashedPass, String salt, byte[] pubKey) throws Exception {
+    public boolean registerRequest(String name, String email, String hashedPass, String salt, byte[] pubKey)
+            throws Exception {
+
         JsonObject request = new JsonObject();
         request.addProperty("type", "register");
         request.addProperty("username", name);
+        request.addProperty("email", email);
         request.addProperty("password", hashedPass);
         request.addProperty("salt", salt);
         request.addProperty("key", Crypto.encoderHelper(pubKey));
@@ -125,6 +134,7 @@ public class ChatClient extends WebSocketClient {
 
             if (obj == null) {
                 return null;
+
             } else {
                 this.username = name;
                 return obj;
@@ -261,7 +271,7 @@ public class ChatClient extends WebSocketClient {
 
         } else {
             byte[] keyBytes = Crypto.decoderHelper(stringKey);
-            return Crypto.bytesToKey(keyBytes);
+            return Crypto.bytesToPublicKey(keyBytes);
 
         }
     }
@@ -279,9 +289,16 @@ public class ChatClient extends WebSocketClient {
     public PrivateKey readPrivateKey(String username) throws Exception {
 
         try (FileInputStream in = new FileInputStream(username + "_private.key")) {
+
+            byte[] readBytes = in.readAllBytes();
+
             KeyFactory factory = KeyFactory.getInstance("RSA");
-            EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(in.readAllBytes());
-            return factory.generatePrivate(privKeySpec);
+            EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(readBytes);
+            PrivateKey key = factory.generatePrivate(privKeySpec);
+            // debug
+            // System.out.println("stored Private key is: " +
+            // Crypto.encoderHelper(readBytes));
+            return key;
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -319,6 +336,8 @@ public class ChatClient extends WebSocketClient {
             PrivateKey key = readPrivateKey(getUsername());
 
             if (key != null) {
+                // debug
+                System.out.println("encrypted msg = " + encryptedMessageText);
                 String messageText = Crypto.decipher(encryptedMessageText, key);
                 System.out.println(sender + " history: " + messageText);
             }
@@ -329,25 +348,40 @@ public class ChatClient extends WebSocketClient {
 
     public String waitForMessage() throws InterruptedException {
         return messageQueue.take();
+
     }
 
     public String waitForChat() throws InterruptedException {
         return chatQueue.take();
+
     }
 
     public void setToken(String token) {
         this.token = token;
+
     }
 
     public String getToken() {
         return this.token;
+
     }
 
     public String getUsername() {
         return this.username;
+
     }
 
     public void setUsername(String username) {
         this.username = username;
+
+    }
+
+    public void setCurrentReceiver(String receiver) {
+        this.currentReceiver = receiver;
+
+    }
+
+    public String getCurrentReceiver() {
+        return currentReceiver;
     }
 }
