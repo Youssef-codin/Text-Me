@@ -1,3 +1,9 @@
+/*
+ * Stuff to fix/add:
+ * some sort of chat session to fix duplication msg bug
+ *
+ */
+
 package arch.joe.client;
 
 import java.io.FileInputStream;
