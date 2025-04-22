@@ -314,7 +314,7 @@ public class ChatClient extends WebSocketClient {
 
             if (key != null) {
                 String messageText = Crypto.decipher(encryptedMessageText, key);
-                System.out.println(sender + ": " + messageText);
+                System.out.println(sender + " history: " + messageText);
             }
         }
 
