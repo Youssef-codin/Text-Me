@@ -29,8 +29,8 @@ public class UserDao {
                     .prepareStatement(
                             "INSERT INTO users(usr_name, usr_email, usr_password, usr_salt, usr_key) values(?, ?, ?, ?, ?)");
             ps.setString(1, name);
-            ps.setString(2, pass);
-            ps.setString(3, email);
+            ps.setString(2, email);
+            ps.setString(3, pass);
             ps.setString(4, salt);
             ps.setBytes(5, key);
 

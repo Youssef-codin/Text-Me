@@ -346,7 +346,7 @@ public class ChatServer {
             Session receiverOnline = nameToSesh.get(msg.getMsgReceiver());
 
             for (HashMap.Entry<String, Session> name : nameToSesh.entrySet()) {
-                System.out.println(name.getKey() + " => " + name.getValue().getId());
+                System.out.println(name.getKey() + " -> " + name.getValue().getId());
             }
 
             if (receiverOnline == null) {

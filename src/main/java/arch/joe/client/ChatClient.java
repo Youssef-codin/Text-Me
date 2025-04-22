@@ -35,6 +35,7 @@ public class ChatClient extends WebSocketClient {
     private final BlockingQueue<String> chatQueue = new LinkedBlockingQueue<>();
     private String token;
     private String username;
+    private String currentReceiver;
 
     public ChatClient(URI serverUri, Draft draft) {
         super(serverUri, draft);
@@ -65,9 +66,18 @@ public class ChatClient extends WebSocketClient {
         String type = obj.get("type").getAsString();
 
         if (type.equals("receive_msg")) {
-            chatQueue.add(message);
+
+            String sender = obj.get("sender").getAsString();
+
+            if (this.currentReceiver != null) {
+                if (this.currentReceiver.equals(sender)) {
+                    chatQueue.add(message);
+                }
+            }
+
         } else {
             messageQueue.add(message);
+
         }
     }
 
@@ -261,7 +271,7 @@ public class ChatClient extends WebSocketClient {
 
         } else {
             byte[] keyBytes = Crypto.decoderHelper(stringKey);
-            return Crypto.bytesToKey(keyBytes);
+            return Crypto.bytesToPublicKey(keyBytes);
 
         }
     }
@@ -279,9 +289,16 @@ public class ChatClient extends WebSocketClient {
     public PrivateKey readPrivateKey(String username) throws Exception {
 
         try (FileInputStream in = new FileInputStream(username + "_private.key")) {
+
+            byte[] readBytes = in.readAllBytes();
+
             KeyFactory factory = KeyFactory.getInstance("RSA");
-            EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(in.readAllBytes());
-            return factory.generatePrivate(privKeySpec);
+            EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(readBytes);
+            PrivateKey key = factory.generatePrivate(privKeySpec);
+            // debug
+            // System.out.println("stored Private key is: " +
+            // Crypto.encoderHelper(readBytes));
+            return key;
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -319,8 +336,10 @@ public class ChatClient extends WebSocketClient {
             PrivateKey key = readPrivateKey(getUsername());
 
             if (key != null) {
+                // debug
+                System.out.println("encrypted msg = " + encryptedMessageText);
                 String messageText = Crypto.decipher(encryptedMessageText, key);
-                System.out.println(sender + ": " + messageText);
+                System.out.println("history: " + sender + ": " + messageText);
             }
         }
 
@@ -355,5 +374,14 @@ public class ChatClient extends WebSocketClient {
     public void setUsername(String username) {
         this.username = username;
 
+    }
+
+    public void setCurrentReceiver(String receiver) {
+        this.currentReceiver = receiver;
+
+    }
+
+    public String getCurrentReceiver() {
+        return currentReceiver;
     }
 }

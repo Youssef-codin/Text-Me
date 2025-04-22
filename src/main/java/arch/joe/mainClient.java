@@ -120,12 +120,13 @@ public class mainClient {
 
         } else {
 
+            System.out.println("send q at anytime to quit the chat.");
+            c.setCurrentReceiver(receiver);
             c.msgHistory(name, receiver);
             Thread thread = new Thread(new ChatListener(c));
             thread.start();
             String message;
             Thread.sleep(100);
-            System.out.println("press q and anytime to quit the chat.");
 
             while (true) {
                 message = scanner.nextLine();
