@@ -1,5 +1,3 @@
-//work on encrypting AES keys
-
 package arch.joe.server;
 
 import java.io.IOException;

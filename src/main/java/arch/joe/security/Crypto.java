@@ -132,25 +132,4 @@ public class Crypto {
     public static String getAlgo() {
         return algoAES;
     }
-
-    // public static void main(String[] args) throws Exception {
-    // String string = "hi mom";
-    // SecretKey aesKey = makeAESKey();
-    // String ivBytes = generateIVBytes();
-    //
-    // String aesEncryptedMsg = cipherAES(string, aesKey, ivBytes);
-    //
-    // KeyPair pair = makeKeyPair();
-    //
-    // String encryptedAESKey = cipherRSA(aesKey.getEncoded(), pair.getPublic());
-    // byte[] aesKeyBytes = decipherRSA(encryptedAESKey, pair.getPrivate());
-    //
-    // SecretKey decryptedAESKey = new SecretKeySpec(aesKeyBytes, "AES");
-    //
-    // String decrypted = decipherAES(aesEncryptedMsg, decryptedAESKey, ivBytes);
-    //
-    // System.out.println("encrypted = " + aesEncryptedMsg);
-    // System.out.println("decrypted = " + decrypted);
-    //
-    // }
 }

@@ -1,6 +1,6 @@
 // TODO: 
-// whenever a token expires, send a msg that makes the person relogin
 // Add token to a file
+// whenever a token expires, send a msg that makes the person relogin
 
 package arch.joe.client;
 
