@@ -1,3 +1,5 @@
+//work on encrypting AES keys
+
 package arch.joe.server;
 
 import java.io.IOException;
@@ -151,7 +153,7 @@ public class ChatServer {
         String email = obj.get("email").getAsString();
         String salt = obj.get("salt").getAsString();
         String stringKey = obj.get("key").getAsString();
-        byte[] key = Crypto.decoderHelper(stringKey);
+        byte[] key = Crypto.decoder(stringKey);
 
         JsonObject response = new JsonObject();
         response.addProperty("type", "register_request");
@@ -273,17 +275,25 @@ public class ChatServer {
         sesh.getAsyncRemote().sendText(response.toString());
     }
 
-    private boolean checkToken(Session sesh, JsonObject obj, String sender) {
+    private int checkToken(Session sesh, JsonObject obj, String sender) {
 
         String token = obj.get("token").getAsString();
         String tokenName = Auth.verifyToken(token);
         String client = seshIDToName.get(sesh.getId());
 
-        if (tokenName == null || !(sender.equals(tokenName) && client.equals(tokenName))) {
-            return false;
+        if (tokenName == null) {
+            return -1;
+
+        } else if (!sender.equals(tokenName)) {
+            System.out.println("token name: " + tokenName);
+            System.out.println("sender name: " + sender);
+            return -2;
+
+        } else if (!client.equals(tokenName)) {
+            return -3;
 
         } else {
-            return true;
+            return 0;
 
         }
     }
@@ -316,17 +326,29 @@ public class ChatServer {
     // time: time
     private void msgRequest(Session sesh, JsonObject obj) throws Exception {
 
-        Msg msg = new Msg(obj.get("message").getAsString(),
+        Msg msg = new Msg(
+                obj.get("message").getAsString(),
                 obj.get("sender").getAsString(),
-                obj.get("receiver").getAsString());
+                obj.get("receiver").getAsString(),
+                obj.get("aes_sender").getAsString(),
+                obj.get("aes_receiver").getAsString(),
+                obj.get("aes_iv").getAsString());
 
         String sender = msg.getMsgSender();
+        int tokenCheck = checkToken(sesh, obj, sender);
 
-        if (!checkToken(sesh, obj, sender)) {
-            System.err.println("bad token, sender or client");
+        if (tokenCheck == -1) {
+            System.err.println("bad token");
             JsonObject badToken = new JsonObject();
             badToken.addProperty("type", "bad_token");
             sesh.getAsyncRemote().sendText(badToken.toString());
+
+        } else if (tokenCheck == -2) {
+            System.err.println("sender is not the owner of that token");
+
+        } else if (tokenCheck == -3) {
+            System.err.println("sessionID does not match the token owner");
+
         } else {
             msgResponse(obj, msg);
 
@@ -395,7 +417,7 @@ public class ChatServer {
             System.err.println("user not found");
 
         } else {
-            response.addProperty("key", Crypto.encoderHelper(user.getKey()));
+            response.addProperty("key", Crypto.encoder(user.getKey()));
 
         }
         sesh.getAsyncRemote().sendText(response.toString());

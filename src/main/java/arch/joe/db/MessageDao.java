@@ -16,6 +16,9 @@ public class MessageDao {
         String sender = msg.getMsgSender();
         String receiver = msg.getMsgReceiver();
         String message = msg.getMsg();
+        String aesSender = msg.getAesSender();
+        String aesReceiver = msg.getAesReceiver();
+        String aesIv = msg.getAesIv();
         long time = msg.msgTime();
 
         try (Connection conn = Database.connect()) {
@@ -23,11 +26,15 @@ public class MessageDao {
             sm.execute("PRAGMA foreign_keys = ON");
 
             PreparedStatement ps = conn
-                    .prepareStatement("INSERT INTO msgs(msg_sender, msg_receiver, msg, time_stamp) values(?, ?, ?, ?)");
+                    .prepareStatement(
+                            "INSERT INTO msgs(msg_sender, msg_receiver, msg, time_stamp, aes_sender, aes_receiver, aes_iv) values(?, ?, ?, ?, ?, ?, ?)");
             ps.setString(1, sender);
             ps.setString(2, receiver);
             ps.setString(3, message);
             ps.setLong(4, time);
+            ps.setString(5, aesSender);
+            ps.setString(6, aesReceiver);
+            ps.setString(7, aesIv);
 
             int rows = ps.executeUpdate();
             System.out.println("Changed: " + rows);
@@ -57,7 +64,11 @@ public class MessageDao {
                 String message = rs.getString("msg");
                 String sender = rs.getString("msg_sender");
                 String receiver = rs.getString("msg_receiver");
-                messages.add(new Msg(message, sender, receiver));
+                String aesSender = rs.getString("aes_sender");
+                String aesReceiver = rs.getString("aes_receiver");
+                String aesIv = rs.getString("aes_iv");
+                long time = rs.getLong("time_stamp");
+                messages.add(new Msg(message, sender, receiver, time, aesSender, aesReceiver, aesIv));
             }
 
         } catch (SQLException e) {

@@ -1,3 +1,5 @@
+// TODO: 
+// whenever a token expires, send a msg that makes the person relogin
 // Add token to a file
 
 package arch.joe.client;
@@ -15,6 +17,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
@@ -105,7 +110,7 @@ public class ChatClient extends WebSocketClient {
         request.addProperty("email", email);
         request.addProperty("password", hashedPass);
         request.addProperty("salt", salt);
-        request.addProperty("key", Crypto.encoderHelper(pubKey));
+        request.addProperty("key", Crypto.encoder(pubKey));
 
         send(request.toString());
 
@@ -223,30 +228,36 @@ public class ChatClient extends WebSocketClient {
         }
     }
 
-    // msg
-    // msgSender
-    // msgReceiver
-    // timeStamp
-    public void sendMsg(Msg msg, String token) throws Exception {
-        String message = msg.getMsg();
-        String sender = msg.getMsgSender();
-        String receiver = msg.getMsgReceiver();
+    public void sendMsg(String message, String sender, String receiver, String token) throws Exception {
 
-        PublicKey key = getPubKey(receiver);
+        PublicKey senderKey = getPubKey(sender);
+        PublicKey receiverKey = getPubKey(receiver);
 
-        if (key == null) {
+        SecretKey aesKey = Crypto.makeAESKey();
+        String aesIv = Crypto.generateIVBytes();
+
+        String aesSender = Crypto.cipherRSA(aesKey.getEncoded(), senderKey);
+        String aesReceiver = Crypto.cipherRSA(aesKey.getEncoded(), receiverKey);
+
+        if (senderKey == null || receiverKey == null) {
             System.err.println("Key not found");
 
         } else {
-            message = Crypto.cipher(message, key);
+
+            message = Crypto.cipherAES(message, aesKey, aesIv);
 
             JsonObject msgRequest = new JsonObject();
             msgRequest.addProperty("type", "send_msg");
             msgRequest.addProperty("message", message);
             msgRequest.addProperty("sender", sender);
             msgRequest.addProperty("receiver", receiver);
+            msgRequest.addProperty("aes_sender", aesSender);
+            msgRequest.addProperty("aes_receiver", aesReceiver);
+            msgRequest.addProperty("aes_iv", aesIv);
             msgRequest.addProperty("token", token);
 
+            // debug
+            // System.out.println(msgRequest.toString());
             send(msgRequest.toString());
 
         }
@@ -270,7 +281,7 @@ public class ChatClient extends WebSocketClient {
             return null;
 
         } else {
-            byte[] keyBytes = Crypto.decoderHelper(stringKey);
+            byte[] keyBytes = Crypto.decoder(stringKey);
             return Crypto.bytesToPublicKey(keyBytes);
 
         }
@@ -295,9 +306,6 @@ public class ChatClient extends WebSocketClient {
             KeyFactory factory = KeyFactory.getInstance("RSA");
             EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(readBytes);
             PrivateKey key = factory.generatePrivate(privKeySpec);
-            // debug
-            // System.out.println("stored Private key is: " +
-            // Crypto.encoderHelper(readBytes));
             return key;
 
         } catch (IOException e) {
@@ -332,18 +340,39 @@ public class ChatClient extends WebSocketClient {
             Msg msg = gson.fromJson(elem, Msg.class);
             msgsList.add(msg);
             String sender = msg.getMsgSender();
-            String encryptedMessageText = msg.getMsg();
-            PrivateKey key = readPrivateKey(getUsername());
+            PrivateKey rsaKey = readPrivateKey(getUsername());
+            String decryptedMsg = decipherMsg(msg, rsaKey);
 
-            if (key != null) {
-                // debug
-                System.out.println("encrypted msg = " + encryptedMessageText);
-                String messageText = Crypto.decipher(encryptedMessageText, key);
-                System.out.println(sender + " history: " + messageText);
+            if (decryptedMsg != null) {
+                System.out.println(sender + " (history): " + decryptedMsg);
             }
         }
 
         return msgsList;
+    }
+
+    protected String decipherMsg(Msg msg, PrivateKey rsaKey) throws Exception {
+
+        if (rsaKey != null) {
+
+            String rsaEncryptedAes;
+            String aesText = msg.getMsg();
+
+            if (msg.getMsgSender().equals(username)) {
+                rsaEncryptedAes = msg.getAesSender();
+
+            } else {
+                rsaEncryptedAes = msg.getAesReceiver();
+
+            }
+
+            byte[] aesKeyBytes = Crypto.decipherRSA(rsaEncryptedAes, rsaKey);
+            SecretKey aesKey = new SecretKeySpec(aesKeyBytes, "AES");
+
+            return Crypto.decipherAES(aesText, aesKey, msg.getAesIv());
+        }
+
+        return null;
     }
 
     public String waitForMessage() throws InterruptedException {

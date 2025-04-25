@@ -6,7 +6,6 @@ import java.util.Scanner;
 
 import com.google.gson.JsonObject;
 
-import arch.joe.app.Msg;
 import arch.joe.client.ChatClient;
 import arch.joe.client.ChatListener;
 import arch.joe.security.Crypto;
@@ -136,8 +135,7 @@ public class mainClient {
                     disconnect(c);
 
                 } else {
-                    Msg msg = new Msg(message, name, receiver);
-                    c.sendMsg(msg, c.getToken());
+                    c.sendMsg(message, c.getUsername(), receiver, c.getToken());
 
                 }
             }

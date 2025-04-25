@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import arch.joe.security.Crypto;
+import arch.joe.app.Msg;
 
 public class ChatListener implements Runnable {
 
@@ -35,27 +35,26 @@ public class ChatListener implements Runnable {
     }
 
     public static void printMessage(String jsonMessage) throws Exception {
+
         JsonElement jsonElement = JsonParser.parseString(jsonMessage);
         JsonObject message = jsonElement.getAsJsonObject();
 
         String type = message.get("type").getAsString();
+        Msg msg = new Msg(
+                message.get("message").getAsString(),
+                message.get("sender").getAsString(),
+                message.get("receiver").getAsString(),
+                message.get("aes_sender").getAsString(),
+                message.get("aes_receiver").getAsString(),
+                message.get("aes_iv").getAsString());
 
         if (type.equals("bad_token")) {
             System.err.println("BAD TOKEN");
 
         } else {
-            String sender = message.get("sender").getAsString();
-            String encryptedMessageText = message.get("message").getAsString();
-
             PrivateKey key = c.readPrivateKey(c.getUsername());
+            System.out.println(c.decipherMsg(msg, key));
 
-            if (key != null) {
-                String messageText = Crypto.decipher(encryptedMessageText, key);
-                System.out.println(sender + ": " + messageText);
-
-            } else {
-                // log user out and make user log back in to get a new token
-            }
         }
     }
 
