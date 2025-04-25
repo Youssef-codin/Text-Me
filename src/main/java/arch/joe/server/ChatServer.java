@@ -334,32 +334,42 @@ public class ChatServer {
 
         String sender = msg.getMsgSender();
         int tokenCheck = checkToken(sesh, obj, sender);
+        JsonObject badToken = new JsonObject();
 
         if (tokenCheck == -1) {
-            System.err.println("bad token");
-            JsonObject badToken = new JsonObject();
-            badToken.addProperty("type", "bad_token");
+            System.err.println("expired or bad token");
+            badToken.addProperty("type", "failed_msg");
             sesh.getAsyncRemote().sendText(badToken.toString());
 
         } else if (tokenCheck == -2) {
             System.err.println("sender is not the owner of that token");
+            badToken.addProperty("type", "failed_msg");
+            sesh.getAsyncRemote().sendText(badToken.toString());
 
         } else if (tokenCheck == -3) {
             System.err.println("sessionID does not match the token owner");
+            badToken.addProperty("type", "failed_msg");
+            sesh.getAsyncRemote().sendText(badToken.toString());
 
         } else {
-            msgResponse(obj, msg);
+            msgResponse(sesh, obj, msg);
 
         }
     }
 
-    private void msgResponse(JsonObject obj, Msg msg) throws Exception {
+    // failed_msg
+    // user_not_found
+    // user_not_online
+    // user_online
+    private void msgResponse(Session sesh, JsonObject obj, Msg msg) throws Exception {
         System.out.println("sender is the token user and client is the proper client");
         User dbReceiver = UserDao.getUser(msg.getMsgReceiver());
         System.out.println(dbReceiver);
+        JsonObject msgStatus = new JsonObject();
 
         if (dbReceiver == null) {
             System.err.println("user Not found");
+            msgStatus.addProperty("type", "user_not_found");
 
         } else {
             MessageDao.insertMsg(msg);
@@ -371,14 +381,18 @@ public class ChatServer {
 
             if (receiverOnline == null) {
                 System.out.println("user is not online");
+                msgStatus.addProperty("type", "user_not_online");
 
             } else {
                 System.out.println("Sending message to receiver");
+                msgStatus.addProperty("type", "user_online");
                 obj.addProperty("time", msg.msgTime());
                 obj.addProperty("type", "receive_msg");
                 receiverOnline.getAsyncRemote().sendText(obj.toString());
 
             }
+            sesh.getAsyncRemote().sendText(msgStatus.toString());
+
         }
     }
 

@@ -135,10 +135,14 @@ public class mainClient {
                     disconnect(c);
 
                 } else {
-                    c.sendMsg(message, c.getUsername(), receiver, c.getToken());
-
+                    boolean sent = c.sendMsg(message, c.getUsername(), receiver, c.getToken());
+                    if (!sent) {
+                        break;
+                    }
                 }
             }
+
+            login(scanner, c);
         }
     }
 }

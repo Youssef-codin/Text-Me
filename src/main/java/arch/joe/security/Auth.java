@@ -40,12 +40,13 @@ public class Auth {
             String token = JWT.create()
                     .withClaim("user_name", username)
                     .withIssuer("auth0")
-                    .withExpiresAt(new Date(System.currentTimeMillis() + 360000))
+                    .withExpiresAt(new Date(System.currentTimeMillis() + 60000)) // debug: only 60,000 here so show it
+                                                                                 // works
                     .sign(algo);
             return token;
 
         } catch (JWTCreationException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
             return null;
         }
     }

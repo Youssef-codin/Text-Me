@@ -1,6 +1,5 @@
 // TODO: 
 // Add token to a file
-// whenever a token expires, send a msg that makes the person relogin
 
 package arch.joe.client;
 
@@ -115,8 +114,7 @@ public class ChatClient extends WebSocketClient {
         send(request.toString());
 
         String response = waitForMessage();
-        JsonElement jsonElement = JsonParser.parseString(response);
-        JsonObject obj = jsonElement.getAsJsonObject();
+        JsonObject obj = parseJson(response);
         response = obj.get("successful").getAsString();
 
         if (response.equals("true")) {
@@ -153,11 +151,10 @@ public class ChatClient extends WebSocketClient {
         request.addProperty("username", name);
         send(request.toString());
 
-        String saltJson = this.waitForMessage();
+        String saltJson = waitForMessage();
 
-        JsonElement saltElement = JsonParser.parseString(saltJson);
-        JsonObject saltObj = saltElement.getAsJsonObject();
-        String salt = saltObj.get("salt").getAsString();
+        JsonObject obj = parseJson(saltJson);
+        String salt = obj.get("salt").getAsString();
 
         return salt;
     }
@@ -173,11 +170,10 @@ public class ChatClient extends WebSocketClient {
         request.addProperty("new_password", Crypto.stringToHash(newPass, salt));
 
         send(request.toString());
-        String response = this.waitForMessage();
+        String response = waitForMessage();
 
-        JsonElement elem = JsonParser.parseString(response);
-        JsonObject object = elem.getAsJsonObject();
-        String successful = object.get("successful").getAsString();
+        JsonObject obj = parseJson(response);
+        String successful = obj.get("successful").getAsString();
 
         if (successful.equals("f")) {
             return false;
@@ -195,11 +191,9 @@ public class ChatClient extends WebSocketClient {
         request.addProperty("password", hashedPass);
 
         send(request.toString());
-        String login = this.waitForMessage();
+        String response = waitForMessage();
 
-        JsonElement jsonElement = JsonParser.parseString(login);
-        JsonObject obj = jsonElement.getAsJsonObject();
-
+        JsonObject obj = parseJson(response);
         String auth = obj.get("authorized").getAsString();
 
         if (auth.equals("f")) {
@@ -217,9 +211,8 @@ public class ChatClient extends WebSocketClient {
 
         String isThere = waitForMessage();
 
-        JsonElement jsonElement = JsonParser.parseString(isThere);
-        JsonObject jsonObject = jsonElement.getAsJsonObject();
-        isThere = jsonObject.get("is_there").getAsString();
+        JsonObject obj = parseJson(isThere);
+        isThere = obj.get("is_there").getAsString();
 
         if (isThere.equals("true")) {
             return true;
@@ -228,7 +221,11 @@ public class ChatClient extends WebSocketClient {
         }
     }
 
-    public void sendMsg(String message, String sender, String receiver, String token) throws Exception {
+    // failed_msg
+    // user_not_found
+    // user_not_online
+    // user_online
+    public boolean sendMsg(String message, String sender, String receiver, String token) throws Exception {
 
         PublicKey senderKey = getPubKey(sender);
         PublicKey receiverKey = getPubKey(receiver);
@@ -241,6 +238,7 @@ public class ChatClient extends WebSocketClient {
 
         if (senderKey == null || receiverKey == null) {
             System.err.println("Key not found");
+            return false;
 
         } else {
 
@@ -256,10 +254,31 @@ public class ChatClient extends WebSocketClient {
             msgRequest.addProperty("aes_iv", aesIv);
             msgRequest.addProperty("token", token);
 
-            // debug
-            // System.out.println(msgRequest.toString());
             send(msgRequest.toString());
 
+            String response = waitForMessage();
+            JsonObject obj = parseJson(response);
+            String type = obj.get("type").getAsString();
+
+            if (type.equals("failed_msg")) {
+                System.err.println("problem with token, relog to get a new token");
+                return false;
+
+            } else if (type.equals("user_not_found")) {
+                System.err.println("problem with token, relog to get a new token");
+                return false;
+
+            } else if (type.equals("user_not_online")) {
+                // could use later to show if user is online or not by returning int instead of
+                // boolean
+                return true;
+
+            } else { // user_online
+                // could use later to show if user is online or not by returning int instead of
+                // boolean
+                return true;
+
+            }
         }
     }
 
@@ -272,9 +291,8 @@ public class ChatClient extends WebSocketClient {
         send(reqPubKey.toString());
         String response = waitForMessage();
 
-        JsonElement elem = JsonParser.parseString(response);
-        JsonObject object = elem.getAsJsonObject();
-        String stringKey = object.get("key").getAsString();
+        JsonObject obj = parseJson(response);
+        String stringKey = obj.get("key").getAsString();
 
         if (stringKey.equals("none")) {
             System.err.println("Key not found");
@@ -326,8 +344,7 @@ public class ChatClient extends WebSocketClient {
 
         send(historyRequest.toString());
         String response = waitForMessage();
-        JsonElement element = JsonParser.parseString(response);
-        JsonObject obj = element.getAsJsonObject();
+        JsonObject obj = parseJson(response);
 
         JsonArray jsonArray = obj.getAsJsonArray("msgs");
         ArrayList<Msg> msgsList = new ArrayList<>();
@@ -383,6 +400,11 @@ public class ChatClient extends WebSocketClient {
     public String waitForChat() throws InterruptedException {
         return chatQueue.take();
 
+    }
+
+    private JsonObject parseJson(String response) {
+        JsonElement elem = JsonParser.parseString(response);
+        return elem.getAsJsonObject();
     }
 
     public void setToken(String token) {
