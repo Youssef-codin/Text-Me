@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import eu.iamgio.animated.transition.AnimatedLabel?>
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXPasswordField?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="726.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="arch.joe.client.GUI.LoginController">
+   <children>
+      <MFXButton fx:id="loginButton" buttonType="RAISED" depthLevel="LEVEL1" layoutX="453.0" layoutY="280.0" prefHeight="39.0" prefWidth="96.0" rippleColor="WHITE" style="-fx-background-radius: 5em; -fx-background-color: #1976D2; -fx-text-fill: #212121; -fx-border-radius: 5em; -fx-padding: 0.5em 1em; -fx-border-insets: 0;" stylesheets="@../CSS/Login.css" text="Login">
+         <font>
+            <Font name="Inter Display Medium" size="15.0" />
+         </font>
+         <effect>
+            <Blend mode="COLOR_DODGE" opacity="0.38" />
+         </effect></MFXButton>
+      <MFXPasswordField allowCopy="true" allowPaste="true" floatMode="ABOVE" layoutX="363.0" layoutY="219.0" prefHeight="40.0" prefWidth="275.0" promptText="Password" stylesheets="@../CSS/Login.css" />
+      <MFXTextField floatMode="ABOVE" layoutX="364.0" layoutY="161.0" prefHeight="39.0" prefWidth="275.0" promptText="Username or Email" stylesheets="@../CSS/Login.css" />
+      <ImageView fitHeight="82.0" fitWidth="122.0" layoutX="461.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Images/loginIco.png" />
+         </image>
+      </ImageView>
+      <Pane prefHeight="400.0" prefWidth="269.0" style="-fx-background-color: linear-gradient(to bottom, #bbdefb, #f5faff);">
+         <children>
+            <ImageView fitHeight="400.0" fitWidth="423.0" layoutX="-48.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/loginIllustration.png" />
+               </image>
+               <effect>
+                  <DropShadow blurType="GAUSSIAN" height="122.94" offsetX="-10.0" offsetY="8.0" radius="56.245000000000005" spread="0.08" width="104.04">
+                     <color>
+                        <Color red="0.30263158679008484" green="0.30263158679008484" blue="0.30263158679008484" />
+                     </color>
+                  </DropShadow>
+               </effect>
+            </ImageView>
+         </children>
+      </Pane>
+      <AnimatedLabel layoutX="439.0" layoutY="109.0" text="Welcome to text me" />
+   </children>
+</AnchorPane>

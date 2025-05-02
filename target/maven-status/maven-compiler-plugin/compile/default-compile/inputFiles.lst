@@ -2,7 +2,11 @@
 /home/joe-arch/Projects/Java/Text-Me/src/main/java/arch/joe/app/User.java
 /home/joe-arch/Projects/Java/Text-Me/src/main/java/arch/joe/client/ChatClient.java
 /home/joe-arch/Projects/Java/Text-Me/src/main/java/arch/joe/client/ChatListener.java
+/home/joe-arch/Projects/Java/Text-Me/src/main/java/arch/joe/client/GUI/Login.java
+/home/joe-arch/Projects/Java/Text-Me/src/main/java/arch/joe/client/GUI/LoginController.java
 /home/joe-arch/Projects/Java/Text-Me/src/main/java/arch/joe/db/Database.java
+/home/joe-arch/Projects/Java/Text-Me/src/main/java/arch/joe/db/MessageDao.java
+/home/joe-arch/Projects/Java/Text-Me/src/main/java/arch/joe/db/UserDao.java
 /home/joe-arch/Projects/Java/Text-Me/src/main/java/arch/joe/mainClient.java
 /home/joe-arch/Projects/Java/Text-Me/src/main/java/arch/joe/security/Auth.java
 /home/joe-arch/Projects/Java/Text-Me/src/main/java/arch/joe/security/Crypto.java

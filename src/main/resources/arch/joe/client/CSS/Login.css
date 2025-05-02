@@ -1,0 +1,40 @@
+.mfx-password-field {
+    -fx-background-color: white;
+    -fx-background-radius: 2em;
+    -fx-border-radius: 2em;
+    -fx-border-color: #1976D2;
+    -fx-border-width: 1px;
+    -fx-padding: 0.5em 1.5em;
+}
+
+.mfx-password-field .text-field {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.mfx-text-field {
+    -fx-background-color: white;
+    -fx-background-radius: 2em;
+    -fx-border-radius: 2em;
+    -fx-border-color: #1976D2;
+    -fx-border-width: 1px;
+    -fx-padding: 0.5em 1.5em;
+}
+
+.mfx-text-field .text-field {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.mfx-button:hover {
+    -fx-background-color: #1565C0 !important;
+    -fx-cursor: hand;
+}

@@ -40,8 +40,7 @@ public class Auth {
             String token = JWT.create()
                     .withClaim("user_name", username)
                     .withIssuer("auth0")
-                    .withExpiresAt(new Date(System.currentTimeMillis() + 60000)) // debug: only 60,000 here so show it
-                                                                                 // works
+                    .withExpiresAt(new Date(System.currentTimeMillis() + 600000)) // debug: only 60,000 for demo
                     .sign(algo);
             return token;
 
