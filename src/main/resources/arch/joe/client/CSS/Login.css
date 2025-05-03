@@ -34,7 +34,20 @@
     -fx-border-radius: 0;
 }
 
-.mfx-button:hover {
+
+.mfx-text-field:hover,
+.mfx-password-field:hover {
+    -fx-border-color: #1976D2 !important;
+    -fx-background-color: #eaeaea !important;
+    -fx-cursor: text;
+}
+
+#loginButton:hover {
     -fx-background-color: #1565C0 !important;
+    -fx-cursor: hand;
+}
+
+#registerButton:hover {
+    -fx-background-color: #d5d5d5 !important;
     -fx-cursor: hand;
 }
