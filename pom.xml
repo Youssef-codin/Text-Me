@@ -88,6 +88,17 @@
       <artifactId>froxty</artifactId>
       <version>1.4.0</version>
     </dependency>
+    <!-- fontawesomeFx-->
+    <dependency>
+      <groupId>de.jensd</groupId>
+      <artifactId>fontawesomefx-materialicons</artifactId>
+      <version>2.2.0-9.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>de.jensd</groupId>
+      <artifactId>fontawesomefx-fontawesome</artifactId>
+      <version>4.7.0-9.1.2</version>
+    </dependency>
     <!-- SQLite-->
     <dependency>
       <groupId>org.xerial</groupId>

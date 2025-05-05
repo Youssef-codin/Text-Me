@@ -1,6 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import de.jensd.fx.glyphs.materialicons.MaterialIconView?>
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" />
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="524.0" prefWidth="943.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="arch.joe.client.GUI.MessengerController">
+   <children>
+      <Pane prefHeight="524.0" prefWidth="96.0" style="-fx-background-color: #263238; -fx-border-color: transparent #B0BEC5 transparent transparent;">
+         <children>
+            <MFXButton fx:id="profileButton" depthLevel="LEVEL0" layoutX="20.0" layoutY="7.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="white_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <graphic>
+                  <MaterialIconView fill="#eceff1" glyphName="PERSON" size="35" styleClass="white_icons" translateX="-1.0" wrappingWidth="34.0" />
+               </graphic>
+            </MFXButton>
+            <VBox alignment="CENTER" layoutY="169.0" prefHeight="187.0" prefWidth="88.0" spacing="15.0">
+               <children>
+                  <MFXButton fx:id="chatButton" depthLevel="LEVEL0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="white_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <graphic>
+                        <MaterialIconView fill="#eceff1" glyphName="CHAT_BUBBLE_OUTLINE" size="35" styleClass="white_icons" translateX="-1.0" translateY="1.0" wrappingWidth="34.0" />
+                     </graphic>
+                  </MFXButton>
+                  <MFXButton fx:id="groupButton" depthLevel="LEVEL0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="white_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <graphic>
+                        <MaterialIconView fill="#eceff1" glyphName="PEOPLE" size="35" styleClass="white_icons" translateX="-1.0" wrappingWidth="34.0" />
+                     </graphic>
+                  </MFXButton>
+                  <MFXButton fx:id="settingsButton" depthLevel="LEVEL0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="white_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <graphic>
+                        <MaterialIconView fill="#eceff1" glyphName="SETTINGS" size="35" styleClass="white_icons" translateX="-1.0" wrappingWidth="34.0" />
+                     </graphic>
+                  </MFXButton>
+               </children>
+            </VBox>
+            <MFXButton fx:id="logoutButton" depthLevel="LEVEL0" layoutX="20.0" layoutY="472.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="white_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <graphic>
+                  <MaterialIconView fill="#eceff1" glyphName="EXIT_TO_APP" size="35" styleClass="white_icons" translateX="-1.0" wrappingWidth="34.0" />
+               </graphic>
+            </MFXButton>
+         </children></Pane>
+      <Pane prefHeight="524.0" prefWidth="307.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #B0BEC5;">
+         <children>
+            <Pane prefHeight="62.0" prefWidth="299.0" style="-fx-background-color: #CFD8DC; -fx-border-color: #B0BEC5;" />
+         </children>
+      </Pane>
+      <Pane prefHeight="524.0" prefWidth="564.0" style="-fx-background-color: #FAFAFA;">
+         <children>
+            <Pane prefHeight="62.0" prefWidth="556.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #BDBDBD transparent;" />
+            <Pane layoutY="462.0" prefHeight="62.0" prefWidth="556.0" style="-fx-background-color: white; -fx-border-color: #BDBDBD transparent;">
+               <children>
+                  <MFXTextField borderGap="1.0" floatMode="ABOVE" layoutX="108.0" prefHeight="62.0" prefWidth="389.0" promptText="Say anything, securely..." style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0 20; -fx-border-color: transparent transparent transparent #BDBDBD; -fx-border-radius: 0; -fx-background-radius: 0;" stylesheets="@../CSS/Messenger.css">
+                     <font>
+                        <Font name="Inter Display Regular" size="16.0" />
+                     </font>
+                  </MFXTextField>
+                  <MFXButton fx:id="sendButton" depthLevel="LEVEL0" layoutX="497.0" layoutY="8.0" prefHeight="46.0" prefWidth="30.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="blue_button" stylesheets="@../CSS/Messenger.css" text="Custom">
+                     <graphic>
+                        <MaterialIconView fill="#1976d2" glyphName="SEND" size="30" styleClass="blue_icons" text="" wrappingWidth="18.0" />
+                     </graphic>
+                  </MFXButton>
+                  <MFXButton fx:id="emojiButton" depthLevel="LEVEL0" layoutX="7.0" layoutY="8.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="blue_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86" translateX="-3.0">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <graphic>
+                        <FontAwesomeIconView fill="#1976d2" glyphName="SMILE_ALT" size="38" styleClass="blue_icons" textAlignment="CENTER" wrappingWidth="33.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </FontAwesomeIconView>
+                     </graphic>
+                  </MFXButton>
+                  <MFXButton fx:id="shareButton" depthLevel="LEVEL0" layoutX="55.0" layoutY="8.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="blue_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <graphic>
+                        <MaterialIconView fill="#1976d2" glyphName="LINK" size="35" styleClass="blue_icons" translateX="-1.0" wrappingWidth="34.0" />
+                     </graphic>
+                  </MFXButton>
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+   </children>
+</HBox>

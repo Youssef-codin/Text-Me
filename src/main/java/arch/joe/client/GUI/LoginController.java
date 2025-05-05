@@ -14,8 +14,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Region;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 public class LoginController implements Initializable {
@@ -38,8 +36,8 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        clipToPill(loginButton);
-        clipToPill(registerButton);
+        Utils.clipToRounded(loginButton, 39, 39);
+        Utils.clipToRounded(registerButton, 39, 39);
 
         animationForDrawings(papersBackground);
         animationForDrawings(drawing);
@@ -95,19 +93,5 @@ public class LoginController implements Initializable {
 
     public void login(ActionEvent e) {
         System.out.println("login");
-    }
-
-    private void clipToPill(Region button) {
-        Rectangle clip = new Rectangle();
-        button.setClip(clip);
-
-        button.layoutBoundsProperty().addListener((obs, oldVal, newVal) -> {
-            double width = newVal.getWidth();
-            double height = newVal.getHeight();
-            clip.setWidth(width);
-            clip.setHeight(height);
-            clip.setArcWidth(height);
-            clip.setArcHeight(height);
-        });
     }
 }

@@ -1,0 +1,34 @@
+.mfx-text-field .text-field {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.blue_button,
+.white_button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 8;
+    -fx-background-radius: 10;
+}
+
+.blue_button:hover {
+    -fx-background-color: #f0f0f0 !important;
+}
+
+.blue_button:hover .blue_icons {
+
+    -fx-fill: #1565C0 !important
+}
+
+.white_button:hover {
+    -fx-background-color: #37474F !important;
+}
+
+
+.white_button:hover .white_icons {
+    -fx-fill: #ECEFF1 !important
+}
