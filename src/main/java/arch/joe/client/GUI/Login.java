@@ -13,7 +13,7 @@ public class Login extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        // CSSFX.start();
+        CSSFX.start();
         Parent root = FXMLLoader.load(getClass().getResource("/arch/joe/client/UI/Login.fxml"));
         Scene scene = new Scene(root, Color.PINK);
         String css = this.getClass().getResource("/arch/joe/client/CSS/Login.css").toExternalForm();

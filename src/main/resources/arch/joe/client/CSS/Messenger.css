@@ -8,27 +8,40 @@
 }
 
 .blue_button,
-.white_button {
+.white_button,
+#searchButton,
+#addButton {
     -fx-background-color: transparent;
     -fx-cursor: hand;
     -fx-padding: 8;
     -fx-background-radius: 10;
 }
 
+
 .blue_button:hover {
     -fx-background-color: #f0f0f0 !important;
 }
 
 .blue_button:hover .blue_icons {
-
-    -fx-fill: #1565C0 !important
+    -fx-fill: #1565C0 !important;
 }
 
 .white_button:hover {
     -fx-background-color: #37474F !important;
 }
 
-
 .white_button:hover .white_icons {
-    -fx-fill: #ECEFF1 !important
+    -fx-fill: #ECEFF1 !important;
+}
+
+#searchButton:hover #searchIcon {
+    -fx-fill: #c0c9cd !important;
+}
+
+#addButton:hover {
+    -fx-background-color: #c0c9cd !important;
+}
+
+#addButton:hover #addIcon {
+    -fx-fill: #a2afb5 !important;
 }

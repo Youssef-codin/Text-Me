@@ -1,5 +1,6 @@
 package arch.joe.client.GUI;
 
+import fr.brouillard.oss.cssfx.CSSFX;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,7 +12,8 @@ public class Messenger extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        // CSSFX.start();
+
+        CSSFX.start();
         Parent root = FXMLLoader.load(getClass().getResource("/arch/joe/client/UI/Messenger.fxml"));
         Scene scene = new Scene(root, Color.PINK);
         String css = this.getClass().getResource("/arch/joe/client/CSS/Messenger.css").toExternalForm();
