@@ -70,6 +70,12 @@
       <artifactId>materialfx</artifactId>
       <version>21.18.0-alpha</version>
     </dependency>
+    <!-- JFoenix-->
+    <dependency>
+      <groupId>com.jfoenix</groupId>
+      <artifactId>jfoenix</artifactId>
+      <version>9.0.10</version>
+    </dependency>
     <!-- live css reloading-->
     <dependency>
       <groupId>fr.brouillard.oss</groupId>

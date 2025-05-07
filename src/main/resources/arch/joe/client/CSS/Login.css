@@ -1,27 +1,19 @@
-.mfx-password-field .text-field {
-    -fx-background-color: transparent;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
-    -fx-border-color: transparent;
-    -fx-background-radius: 0;
-    -fx-border-radius: 0;
-}
-
-.mfx-text-field .text-field {
-    -fx-background-color: transparent;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
-    -fx-border-color: transparent;
-    -fx-background-radius: 0;
-    -fx-border-radius: 0;
-}
-
-
 .mfx-text-field:hover,
 .mfx-password-field:hover {
     -fx-border-color: #1976D2 !important;
     -fx-background-color: #eaeaea !important;
-    -fx-cursor: text;
+}
+
+.mfx-text-field:focus-within,
+.mfx-password-field:focus-within {
+    -fx-border-color: #1976D2 !important;
+    -fx-background-color: #eaeaea !important;
+}
+
+.mfx-text-field:floating .floating-text,
+.mfx-password-field:floating .floating-text {
+    -fx-text-fill: #1976D2 !important;
+    -fx-background-color: transparent !important;
 }
 
 #loginButton:hover {
