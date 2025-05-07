@@ -79,10 +79,13 @@ public class MessengerController implements Initializable {
         scaleAnimations(groupIcon, groupButton, 1.3);
         scaleAnimations(logoutIcon, logoutButton, 1.3);
 
-        HBox contactItem = new ContactBox(new Contact("Dad", true,
-                "hi again did u do the groceries i told u to do? and the dishes? ah ofc u forgot u dumb bimbo",
-                "16/09/2024"));
-        contactsView.getChildren().addAll(contactItem);
+        for (int i = 0; i <= 1; i++) {
+
+            HBox contactItem = new ContactBox(new Contact("Dad", true,
+                    "hi again did u do the groceries i told u to do? and the dishes? ah ofc u forgot u dumb bimbo",
+                    "16/09/2024"));
+            contactsView.getChildren().addAll(contactItem);
+        }
     }
 
     private void scaleAnimations(Node animatedNode, Node triggerNode, double scale) {

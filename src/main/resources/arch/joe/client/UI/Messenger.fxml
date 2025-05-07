@@ -17,7 +17,7 @@
 
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="524.0" prefWidth="943.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="arch.joe.client.GUI.MessengerController">
    <children>
-      <Pane prefHeight="524.0" prefWidth="70.0" style="-fx-background-color: #263238; -fx-border-color: transparent #B0BEC5 transparent transparent;">
+      <Pane prefHeight="524.0" prefWidth="70.0" style="-fx-background-color: #263238; -fx-border-color: transparent;">
          <children>
             <MFXButton fx:id="profileButton" accessibleHelp="See your profile." depthLevel="LEVEL0" layoutX="11.0" layoutY="8.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="white_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
                <font>
@@ -71,9 +71,9 @@
                </color>
             </DropShadow>
          </effect></Pane>
-      <Pane prefHeight="524.0" prefWidth="307.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #B0BEC5;">
+      <VBox prefHeight="548.0" prefWidth="307.0" style="-fx-background-color: #FAFAFA;">
          <children>
-            <Pane prefHeight="62.0" prefWidth="307.0" style="-fx-background-color: #CFD8DC; -fx-border-color: #B0BEC5;">
+            <Pane prefHeight="62.0" prefWidth="307.0" style="-fx-background-color: #CFD8DC; -fx-border-color: transparent #B0BEC5 transparent transparent;">
                <children>
                   <MFXTextField borderGap="1.0" floatMode="DISABLED" layoutX="14.0" layoutY="8.0" prefHeight="46.0" prefWidth="245.0" promptText="Search for contacts..." style="-fx-border-color: transparent; -fx-background-radius: 5em; -fx-border-radius: 5em; -fx-background-color: #B0BEC5; -fx-text-fill: #546E7A; -fx-padding: 0 0 0 45;" stylesheets="@../CSS/Messenger.css">
                      <font>
@@ -99,15 +99,16 @@
                         <MaterialIconView fx:id="addIcon" fill="#b0bec5" glyphName="ADD" size="40" translateX="-11.0" wrappingWidth="38.0" />
                      </graphic>
                   </MFXButton>
-               </children></Pane>
-            <MFXScrollPane fx:id="contactsScroll" hbarPolicy="NEVER" hmax="0.0" layoutY="61.0" prefHeight="463.0" prefWidth="307.0" style="-fx-border-color: #B0BEC5  #B0BEC5 #B0BEC5 transparent; -fx-background-color: #FAFAFA;" vmax="1.1">
+               </children>
+            </Pane>
+            <MFXScrollPane fx:id="contactsScroll" focusTraversable="false" hbarPolicy="NEVER" hmax="0.0" prefHeight="465.0" prefWidth="307.0" style="-fx-border-color: #B0BEC5; -fx-background-color: transparent; -fx-padding: 0 0 0 1;" vbarPolicy="ALWAYS" vmax="1.1">
                <content>
-                  <VBox fx:id="contactsView" prefHeight="459.0" prefWidth="303.0" style="-fx-background-color: #FAFAFA; -fx-border-color: transparent transparent #B0BEC5 transparent;">
+                  <VBox fx:id="contactsView" prefHeight="456.0" prefWidth="293.0" style="-fx-background-color: transparent; -fx-border-color: transparent;">
                      <children>
-                        <HBox alignment="CENTER_LEFT" minHeight="-Infinity" minWidth="-Infinity" prefHeight="62.0" prefWidth="307.0" spacing="10.0" style="-fx-background-color: #FAFAFA; -fx-padding: 0 10 10; -fx-border-color: transparent transparent #B0BEC5 transparent;">
+                        <HBox alignment="CENTER_LEFT" minHeight="-Infinity" minWidth="-Infinity" prefHeight="62.0" prefWidth="291.0" spacing="2.0" style="-fx-background-color: #FAFAFA; -fx-padding: 0 10 10; -fx-border-color: transparent transparent #B0BEC5 transparent;" styleClass="contact-box">
                            <children>
                               <FontAwesomeIconView fill="#263238" glyphName="USER_CIRCLE_ALT" size="40" />
-                              <VBox prefHeight="50.0" prefWidth="192.0" style="-fx-background-color: transparent; -fx-padding: 10 0 0 10;">
+                              <VBox prefHeight="50.0" prefWidth="217.0" style="-fx-background-color: transparent; -fx-padding: 10 0 0 10;">
                                  <children>
                                     <Label fx:id="contactName" alignment="TOP_LEFT" prefHeight="0.0" prefWidth="128.0" text="User" textFill="#212121">
                                        <font>
@@ -117,10 +118,11 @@
                                     <Label fx:id="lastMessage" prefHeight="0.0" prefWidth="160.0" text="Hey joe how are you?" textFill="#607d8b">
                                        <font>
                                           <Font name="Inter Display Regular" size="13.0" />
-                                       </font></Label>
+                                       </font>
+                                    </Label>
                                  </children>
                               </VBox>
-                              <Label alignment="TOP_RIGHT" prefHeight="50.0" prefWidth="94.0" text="19/04/2025" textFill="#b0bec5">
+                              <Label alignment="TOP_RIGHT" prefHeight="50.0" prefWidth="118.0" text="19/04/2025" textFill="#b0bec5">
                                  <font>
                                     <Font name="Inter Display Regular" size="12.0" />
                                  </font>
@@ -132,7 +134,7 @@
                </content>
             </MFXScrollPane>
          </children>
-      </Pane>
+      </VBox>
       <Pane prefHeight="524.0" prefWidth="566.0" style="-fx-background-color: #FAFAFA;">
          <children>
             <Pane layoutY="462.0" prefHeight="62.0" prefWidth="566.0" style="-fx-background-color: white; -fx-border-color: #BDBDBD transparent;">
@@ -172,7 +174,7 @@
                   </MFXButton>
                </children>
             </Pane>
-            <AnimatedHBox alignment="CENTER_LEFT" prefHeight="62.0" prefWidth="566.0" spacing="15.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #B0BEC5 transparent; -fx-padding: 0 10;">
+            <AnimatedHBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="566.0" spacing="15.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #B0BEC5 transparent; -fx-padding: 0 10;">
                <children>
                   <Label fx:id="currentUser" graphicTextGap="10.0" prefHeight="28.0" prefWidth="169.0" style="-fx-background-color: #ECEFF1;" text="User" textAlignment="CENTER" textFill="#212121">
                      <font>

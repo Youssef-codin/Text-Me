@@ -1,19 +1,9 @@
-/* .mfx-text-field .text-field { */
-/*     -fx-background-color: transparent; */
-/*     -fx-background-insets: 0; */
-/*     -fx-padding: 0; */
-/*     -fx-border-color: transparent; */
-/*     -fx-background-radius: 0; */
-/*     -fx-border-radius: 0; */
-/* } */
-
 .blue_button,
 .white_button,
 #searchButton,
 #addButton {
     -fx-background-color: transparent;
     -fx-cursor: hand;
-    /* -fx-padding: 8; */
     -fx-background-radius: 10;
 }
 
@@ -44,4 +34,23 @@
 
 #addButton:hover #addIcon {
     -fx-fill: #1565C0 !important;
+}
+
+.contact-box {
+    -fx-background-color: #FAFAFA;
+    -fx-padding: 0 10 10;
+    -fx-border-color: transparent transparent #B0BEC5 transparent;
+}
+
+.contact-box:hover {
+    -fx-cursor: hand;
+    -fx-background-color: #E8EAF6;
+    -fx-padding: 0 10 10;
+    -fx-border-color: transparent transparent #B0BEC5 transparent;
+}
+
+.contact-box:focused {
+    -fx-background-color: #E8EAF6;
+    -fx-padding: 0 10 10;
+    -fx-opacity: 0.9;
 }

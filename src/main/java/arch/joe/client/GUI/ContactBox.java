@@ -11,14 +11,20 @@ import javafx.scene.paint.Paint;
 
 public class ContactBox extends HBox {
 
+    private Contact contactInfo;
+
     public ContactBox(Contact contactInfo) {
+        this.contactInfo = contactInfo;
+
         this.setAlignment(Pos.CENTER_LEFT);
-        this.setStyle(
-                "-fx-background-color: #FAFAFA; -fx-padding: 0 10 10; -fx-border-color: transparent transparent #B0BEC5 transparent;");
         this.setSpacing(10);
-        this.setMinSize(307, 62);
-        this.prefWidth(307);
+        this.setMinSize(291, 62);
+        this.prefWidth(291);
         this.prefHeight(62);
+        this.setFocusTraversable(true);
+        this.getStyleClass().add("contact-box");
+
+        this.setOnMouseClicked(e -> contactAction());
 
         FontAwesomeIconView userIcon = new FontAwesomeIconView(FontAwesomeIcon.USER_CIRCLE_ALT);
         userIcon.setFill(Paint.valueOf("#263238"));
@@ -30,25 +36,33 @@ public class ContactBox extends HBox {
         username.setStyle("-fx-font-family: 'Inter Display SemiBold'; -fx-font-size: 17px; -fx-text-fill: #212121;");
 
         Label lastMsg = new Label(contactInfo.getLastMsg());
-        lastMsg.setMaxSize(160, 0);
-        lastMsg.prefWidth(160);
+        lastMsg.setMaxSize(170, 0);
+        lastMsg.prefWidth(170);
         lastMsg.setStyle("-fx-font-family: 'Inter Display'; -fx-font-size: 13px; -fx-text-fill: #607d8b;");
 
         Label timeStamp = new Label(contactInfo.getTimeStamp());
         timeStamp.setAlignment(Pos.TOP_RIGHT);
-        timeStamp.setMinSize(94, 50);
-        timeStamp.prefWidth(94);
+        timeStamp.setMinSize(118, 50);
+        timeStamp.prefWidth(118);
         timeStamp.prefHeight(50);
         timeStamp.setStyle("-fx-font-family: 'Inter Display'; -fx-font-size: 12px; -fx-text-fill: #b0bec5;");
 
         VBox contactInfoBox = new VBox();
         contactInfoBox.setStyle("-fx-background-color: transparent; -fx-padding: 10 0 0 10;");
         contactInfoBox.setAlignment(Pos.TOP_LEFT);
-        contactInfoBox.setMaxSize(192, 50);
-        contactInfoBox.prefWidth(192);
+        contactInfoBox.setMaxSize(217, 50);
+        contactInfoBox.prefWidth(217);
         contactInfoBox.prefHeight(50);
         contactInfoBox.getChildren().addAll(username, lastMsg);
 
         this.getChildren().addAll(userIcon, contactInfoBox, timeStamp);
+    }
+
+    private void contactAction() {
+        this.requestFocus();
+    }
+
+    public Contact getContactInfo() {
+        return contactInfo;
     }
 }
