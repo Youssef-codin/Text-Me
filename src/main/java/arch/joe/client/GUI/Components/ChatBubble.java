@@ -1,39 +1,45 @@
 package arch.joe.client.GUI.Components;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.text.TextAlignment;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 public class ChatBubble extends HBox {
 
     public ChatBubble(String msg, boolean isSender, String time) {
+        this.setMaxWidth(Double.MAX_VALUE);
+        this.setMinHeight(40);
         this.setPrefHeight(USE_COMPUTED_SIZE);
         this.setPrefWidth(USE_COMPUTED_SIZE);
 
-        Label messageLabel = new Label(msg);
-        messageLabel.setWrapText(true);
-        messageLabel.setMaxWidth(250);
+        Label msgLabel = new Label(msg);
+        msgLabel.setWrapText(true);
+        msgLabel.setMaxWidth(7.0 * 35);
+        msgLabel.setWrapText(true);
+        msgLabel.setAlignment(Pos.TOP_LEFT);
+
+        Text text = new Text();
+        text.setFont(msgLabel.getFont());
+        text.setWrappingWidth(250);
+        double textHeight = text.getLayoutBounds().getHeight();
+        msgLabel.setMinHeight(textHeight + 20);
+
+        if (isSender) {
+            this.setAlignment(Pos.CENTER_RIGHT);
+            msgLabel.getStyleClass().add("sender-bubble");
+        } else {
+            this.setAlignment(Pos.CENTER_LEFT);
+            msgLabel.getStyleClass().add("receiver-bubble");
+        }
 
         Label timeLabel = new Label(time);
         timeLabel.getStyleClass().add("time-label");
 
-        StackPane bubble = new StackPane();
-        bubble.getChildren().add(messageLabel);
-        bubble.setPadding(new Insets(8, 12, 8, 12));
+        VBox msgBox = new VBox(3);
 
-        if (isSender) {
-            this.setAlignment(Pos.CENTER_RIGHT);
-            bubble.getStyleClass().add("sender-bubble");
-            messageLabel.setTextAlignment(TextAlignment.LEFT);
-        } else {
-            this.setAlignment(Pos.CENTER_LEFT);
-            bubble.getStyleClass().add("receiver-bubble");
-            messageLabel.setTextAlignment(TextAlignment.LEFT);
-        }
-
-        this.getChildren().add(bubble);
+        msgBox.getChildren().addAll(msgLabel, timeLabel);
+        this.getChildren().add(msgBox);
     }
 }
