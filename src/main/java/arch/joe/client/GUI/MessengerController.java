@@ -4,8 +4,11 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import arch.joe.app.Contact;
+import arch.joe.client.GUI.Components.ChatBubble;
+import arch.joe.client.GUI.Components.ContactBox;
 import de.jensd.fx.glyphs.materialicons.*;
 import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
@@ -52,6 +55,10 @@ public class MessengerController implements Initializable {
     private Label currentUser;
     @FXML
     private VBox contactsView;
+    @FXML
+    private VBox chatBox;
+    @FXML
+    private MFXTextField messageField;
 
     private static boolean isAnimating = false;
 
@@ -86,8 +93,19 @@ public class MessengerController implements Initializable {
                     "16/09/2024"));
             contactsView.getChildren().addAll(contactItem);
         }
+
+        chatBox.getChildren().add(new ChatBubble("hi", true));
+        chatBox.getChildren().add(
+                new ChatBubble("Did you do the damn fucking homework you dumb mother fucking piece of shit", false));
+        chatBox.getChildren().add(
+                new ChatBubble("Did you do the damn fucking homework you dumb mother fucking piece of shit", true));
     }
 
+    public void sendMessage() {
+
+    }
+
+    // Animations
     private void scaleAnimations(Node animatedNode, Node triggerNode, double scale) {
         scaleInNode(animatedNode, triggerNode, scale);
         scaleOutNode(animatedNode, triggerNode);

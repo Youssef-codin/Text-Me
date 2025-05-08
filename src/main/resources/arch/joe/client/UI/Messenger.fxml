@@ -6,6 +6,7 @@
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import io.github.palexdev.materialfx.controls.MFXScrollPane?>
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.HBox?>
@@ -71,7 +72,7 @@
                </color>
             </DropShadow>
          </effect></Pane>
-      <VBox prefHeight="548.0" prefWidth="307.0" style="-fx-background-color: #FAFAFA;">
+      <VBox prefHeight="548.0" prefWidth="307.0" style="-fx-background-color: #F5F5F5;">
          <children>
             <Pane prefHeight="62.0" prefWidth="307.0" style="-fx-background-color: #CFD8DC; -fx-border-color: transparent #B0BEC5 transparent transparent;">
                <children>
@@ -91,12 +92,12 @@
                         <MaterialIconView fx:id="searchIcon" fill="#cfd8dc" glyphName="SEARCH" size="35" translateX="-7.0" wrappingWidth="30.0" />
                      </graphic>
                   </MFXButton>
-                  <MFXButton fx:id="addButton" depthLevel="LEVEL0" layoutX="266.0" layoutY="15.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="33.0" prefWidth="33.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
+                  <MFXButton fx:id="addButton" depthLevel="LEVEL0" layoutX="266.0" layoutY="15.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="33.0" prefWidth="33.0" rippleAnimateShadow="true" style="-fx-text-fill: red;" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
                      <font>
                         <Font size="14.0" />
                      </font>
                      <graphic>
-                        <MaterialIconView fx:id="addIcon" fill="#b0bec5" glyphName="ADD" size="40" translateX="-11.0" wrappingWidth="38.0" />
+                        <MaterialIconView fx:id="addIcon" fill="#b0bec5" glyphName="ADD" size="40" translateX="-3.0" wrappingWidth="38.0" />
                      </graphic>
                   </MFXButton>
                </children>
@@ -135,11 +136,35 @@
             </MFXScrollPane>
          </children>
       </VBox>
-      <Pane prefHeight="524.0" prefWidth="566.0" style="-fx-background-color: #FAFAFA;">
+      <VBox prefHeight="524.0" prefWidth="573.0" style="-fx-background-color: #F5F5F5;">
          <children>
-            <Pane layoutY="462.0" prefHeight="62.0" prefWidth="566.0" style="-fx-background-color: white; -fx-border-color: #BDBDBD transparent;">
+            <AnimatedHBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="566.0" spacing="15.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #B0BEC5 transparent; -fx-padding: 0 10;">
                <children>
-                  <MFXTextField borderGap="1.0" floatMode="ABOVE" layoutX="108.0" prefHeight="62.0" prefWidth="392.0" promptText="Say anything, securely..." style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0 20; -fx-border-color: transparent transparent transparent #BDBDBD; -fx-border-radius: 0; -fx-background-radius: 0;" stylesheets="@../CSS/Messenger.css">
+                  <Label fx:id="currentUser" graphicTextGap="10.0" prefHeight="28.0" prefWidth="169.0" style="-fx-background-color: #ECEFF1;" text="User" textAlignment="CENTER" textFill="#212121">
+                     <font>
+                        <Font name="Inter Display SemiBold" size="22.0" />
+                     </font>
+                     <graphic>
+                        <Circle fx:id="userOnline" fill="#b0bec5" radius="4.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                     </graphic>
+                  </Label>
+               </children>
+            </AnimatedHBox>
+            <MFXScrollPane hbarPolicy="NEVER" prefHeight="401.0" prefWidth="571.0" style="-fx-background-color: transparent;">
+               <content>
+                  <VBox fx:id="chatBox" alignment="TOP_CENTER" prefHeight="399.0" prefWidth="569.0" spacing="3.0" style="-fx-background-color: transparent;">
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                     <children>
+                        <HBox alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="52.0" prefWidth="549.0" />
+                     </children>
+                  </VBox>
+               </content>
+            </MFXScrollPane>
+            <Pane prefHeight="62.0" prefWidth="571.0" style="-fx-background-color: #F5F5F5; -fx-border-color: #BDBDBD transparent;">
+               <children>
+                  <MFXTextField fx:id="messageField" borderGap="1.0" floatMode="ABOVE" layoutX="108.0" prefHeight="62.0" prefWidth="392.0" promptText="Say anything, securely..." style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0 20; -fx-border-color: transparent transparent transparent #BDBDBD; -fx-border-radius: 0; -fx-background-radius: 0;" stylesheets="@../CSS/Messenger.css">
                      <font>
                         <Font name="Inter Display Light" size="15.0" />
                      </font>
@@ -164,7 +189,7 @@
                         <MaterialIconView fill="#1565c0" glyphName="LINK" size="35" styleClass="blue_icons" translateX="-2.0" wrappingWidth="34.0" />
                      </graphic>
                   </MFXButton>
-                  <MFXButton fx:id="sendButton" depthLevel="LEVEL0" layoutX="512.0" layoutY="8.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="blue_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
+                  <MFXButton fx:id="sendButton" depthLevel="LEVEL0" layoutX="512.0" layoutY="8.0" minHeight="-Infinity" minWidth="-Infinity" onAction="#sendMessage" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="blue_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -174,19 +199,7 @@
                   </MFXButton>
                </children>
             </Pane>
-            <AnimatedHBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="566.0" spacing="15.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #B0BEC5 transparent; -fx-padding: 0 10;">
-               <children>
-                  <Label fx:id="currentUser" graphicTextGap="10.0" prefHeight="28.0" prefWidth="169.0" style="-fx-background-color: #ECEFF1;" text="User" textAlignment="CENTER" textFill="#212121">
-                     <font>
-                        <Font name="Inter Display SemiBold" size="22.0" />
-                     </font>
-                     <graphic>
-                        <Circle fx:id="userOnline" fill="#b0bec5" radius="4.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                     </graphic>
-                  </Label>
-               </children>
-            </AnimatedHBox>
          </children>
-      </Pane>
+      </VBox>
    </children>
 </HBox>

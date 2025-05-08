@@ -54,3 +54,49 @@
     -fx-padding: 0 10 10;
     -fx-opacity: 0.9;
 }
+
+.sender-bubble {
+    -fx-background-color: #1565c0;
+    -fx-padding: 10;
+    -fx-border-color: transparent;
+    -fx-border-radius: 13;
+    -fx-background-radius: 13;
+
+    -fx-font-family: 'Inter Display';
+    -fx-font-size: 15px;
+    -fx-text-fill: #212121;
+
+    -jfx-unfocus-color: transparent;
+    -fx-wrap-text: true;
+    -fx-focus-traversable: false;
+    -jfx-focus-color: transparent;
+}
+
+.sender-bubble:hover {
+    -fx-background-color: #0D47A1;
+}
+
+.receiver-bubble {
+    -fx-background-color: #E0E0E0;
+    -fx-padding: 10;
+    -fx-border-color: transparent;
+    -fx-border-radius: 13;
+    -fx-background-radius: 13;
+
+    -fx-font-family: 'Inter Display';
+    -fx-font-size: 15px;
+    -fx-text-fill: #212121;
+
+    -jfx-unfocus-color: transparent;
+    -fx-wrap-text: true;
+    -fx-focus-traversable: false;
+    -jfx-focus-color: transparent;
+}
+
+.receiver-bubble:hover {
+    -fx-background-color: #b2b2b2;
+}
+
+.time-label {
+    -fx-alignment: center-right;
+}
