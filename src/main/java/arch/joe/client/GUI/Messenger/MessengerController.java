@@ -6,8 +6,8 @@ import java.util.ResourceBundle;
 
 import arch.joe.app.Contact;
 import arch.joe.client.GUI.Utils;
-import arch.joe.client.GUI.Components.ChatBubble;
-import arch.joe.client.GUI.Components.ContactBox;
+import arch.joe.client.GUI.Messenger.Components.ChatBubble;
+import arch.joe.client.GUI.Messenger.Components.ContactBox;
 import arch.joe.db.UserDao;
 import de.jensd.fx.glyphs.materialicons.*;
 import io.github.palexdev.materialfx.controls.MFXButton;

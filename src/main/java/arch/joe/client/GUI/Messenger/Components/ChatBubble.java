@@ -1,4 +1,4 @@
-package arch.joe.client.GUI.Components;
+package arch.joe.client.GUI.Messenger.Components;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;

@@ -1,4 +1,4 @@
-package arch.joe.client.GUI.Components;
+package arch.joe.client.GUI.Messenger.Components;
 
 import arch.joe.app.Contact;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
