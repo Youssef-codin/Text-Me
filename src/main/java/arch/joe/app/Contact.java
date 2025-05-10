@@ -7,6 +7,16 @@ public class Contact {
     private String lastMsg;
     private String timeStamp;
 
+    public Contact(String name) {
+        this.name = name;
+    }
+
+    public Contact(String name, String lastMsg, String timeStamp) {
+        this.name = name;
+        this.lastMsg = lastMsg;
+        this.timeStamp = timeStamp;
+    }
+
     public Contact(String name, Boolean isOnline, String lastMsg, String timeStamp) {
         this.name = name;
         this.isOnline = isOnline;

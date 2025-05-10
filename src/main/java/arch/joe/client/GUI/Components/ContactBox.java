@@ -3,6 +3,7 @@ package arch.joe.client.GUI.Components;
 import arch.joe.app.Contact;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -36,16 +37,17 @@ public class ContactBox extends HBox {
         username.setStyle("-fx-font-family: 'Inter Display SemiBold'; -fx-font-size: 17px; -fx-text-fill: #212121;");
 
         Label lastMsg = new Label(contactInfo.getLastMsg());
-        lastMsg.setMaxSize(170, 0);
-        lastMsg.prefWidth(170);
-        lastMsg.setStyle("-fx-font-family: 'Inter Display'; -fx-font-size: 13px; -fx-text-fill: #607d8b;");
+        lastMsg.setMinSize(140, 0);
+        lastMsg.setStyle(
+                "-fx-font-family: 'Inter Display'; -fx-font-size: 13px; -fx-text-fill: #607d8b;-fx-background-color: transparent;");
 
         Label timeStamp = new Label(contactInfo.getTimeStamp());
-        timeStamp.setAlignment(Pos.TOP_RIGHT);
-        timeStamp.setMinSize(118, 50);
-        timeStamp.prefWidth(118);
+        timeStamp.setAlignment(Pos.TOP_CENTER);
+        timeStamp.setMinSize(70, 50);
         timeStamp.prefHeight(50);
-        timeStamp.setStyle("-fx-font-family: 'Inter Display'; -fx-font-size: 12px; -fx-text-fill: #b0bec5;");
+        timeStamp.setPadding(new Insets(0, 0, 5, 0));
+        timeStamp.setStyle(
+                "-fx-font-family: 'Inter Display'; -fx-font-size: 12px; -fx-text-fill: #b0bec5;-fx-background-color: transparent;");
 
         VBox contactInfoBox = new VBox();
         contactInfoBox.setStyle("-fx-background-color: transparent; -fx-padding: 10 0 0 10;");

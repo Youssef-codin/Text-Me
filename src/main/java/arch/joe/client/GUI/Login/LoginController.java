@@ -1,9 +1,10 @@
-package arch.joe.client.GUI;
+package arch.joe.client.GUI.Login;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import animatefx.animation.SlideInLeft;
+import arch.joe.client.GUI.Utils;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXPasswordField;
 import io.github.palexdev.materialfx.controls.MFXTextField;

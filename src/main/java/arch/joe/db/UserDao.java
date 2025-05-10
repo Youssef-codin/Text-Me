@@ -8,7 +8,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
+import arch.joe.app.Contact;
 import arch.joe.app.User;
 
 public class UserDao {
@@ -86,6 +88,25 @@ public class UserDao {
     // e.printStackTrace();
     // }
     // }
+
+    public static ArrayList<Contact> searchUser(String name) {
+        ArrayList<Contact> list = new ArrayList<>();
+
+        try (Connection conn = Database.connect()) {
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE usr_name LIKE ?");
+            ps.setString(1, name + "%");
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Contact(rs.getString("usr_name")));
+            }
+            return list;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public static void changePassword(String name, String newHashedPassword) {
         try (Connection conn = Database.connect()) {

@@ -1,4 +1,4 @@
-package arch.joe.client.GUI;
+package arch.joe.client.GUI.Messenger;
 
 import fr.brouillard.oss.cssfx.CSSFX;
 import io.github.palexdev.materialfx.theming.JavaFXThemes;
@@ -11,10 +11,11 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class Login extends Application {
+public class Messenger extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+
         UserAgentBuilder.builder()
                 .themes(JavaFXThemes.MODENA) // Optional if you don't need JavaFX's default theme, still recommended
                                              // though
@@ -25,11 +26,10 @@ public class Login extends Application {
                 .build() // Assembles all the added themes into a single CSSFragment (very powerful class
                          // check its documentation)
                 .setGlobal(); // Finally, sets the produced stylesheet as the global User-Agent stylesheet
-
         CSSFX.start();
-        Parent root = FXMLLoader.load(getClass().getResource("/arch/joe/client/UI/Login.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/arch/joe/client/UI/Messenger.fxml"));
         Scene scene = new Scene(root, Color.PINK);
-        String css = this.getClass().getResource("/arch/joe/client/CSS/Login.css").toExternalForm();
+        String css = this.getClass().getResource("/arch/joe/client/CSS/Messenger.css").toExternalForm();
         scene.getStylesheets().add(css);
 
         stage.setResizable(false);
