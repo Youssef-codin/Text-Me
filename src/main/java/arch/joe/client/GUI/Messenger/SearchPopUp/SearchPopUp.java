@@ -1,4 +1,4 @@
-package arch.joe.client.GUI.SearchPopUp;
+package arch.joe.client.GUI.Messenger.SearchPopUp;
 
 import io.github.palexdev.materialfx.theming.JavaFXThemes;
 import io.github.palexdev.materialfx.theming.MaterialFXStylesheets;
