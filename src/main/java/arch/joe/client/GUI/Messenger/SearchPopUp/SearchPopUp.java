@@ -3,17 +3,15 @@ package arch.joe.client.GUI.Messenger.SearchPopUp;
 import io.github.palexdev.materialfx.theming.JavaFXThemes;
 import io.github.palexdev.materialfx.theming.MaterialFXStylesheets;
 import io.github.palexdev.materialfx.theming.UserAgentBuilder;
-import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class SearchPopUp extends Application {
+public class SearchPopUp {
 
-    @Override
-    public void start(Stage stage) throws Exception {
+    public static void showPopUp() throws Exception {
 
         UserAgentBuilder.builder()
                 .themes(JavaFXThemes.MODENA) // Optional if you don't need JavaFX's default theme, still recommended
@@ -25,19 +23,15 @@ public class SearchPopUp extends Application {
                 .build() // Assembles all the added themes into a single CSSFragment (very powerful class
                          // check its documentation)
                 .setGlobal(); // Finally, sets the produced stylesheet as the global User-Agent stylesheet
-        Parent root = FXMLLoader.load(getClass().getResource("/arch/joe/client/UI/addContacts.fxml"));
+        Parent root = FXMLLoader.load(SearchPopUp.class.getResource("/arch/joe/client/UI/addContacts.fxml"));
         Scene scene = new Scene(root, Color.PINK);
-        String css = this.getClass().getResource("/arch/joe/client/CSS/addContacts.css").toExternalForm();
+        String css = SearchPopUp.class.getResource("/arch/joe/client/CSS/addContacts.css").toExternalForm();
         scene.getStylesheets().add(css);
 
+        Stage stage = new Stage();
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
 
     }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
 }

@@ -1,0 +1,41 @@
+#searchButton:hover {
+    -fx-background-color: #1565C0 !important;
+}
+
+#addButton:hover {
+    -fx-background-color: #455A64 !important;
+    -fx-border-color: #1565C0 !important;
+}
+
+.mfx-button:hover {
+    -fx-cursor: hand;
+}
+
+.mfx-text-field:focused {
+    -fx-border-color: #1976D2;
+}
+
+.mfx-text-field:floating .floating-text {
+    -fx-text-fill: #1976D2;
+    -fx-background-color: transparent;
+    -fx-font-family: 'Inter Display Medium';
+}
+
+.contact-box {
+    -fx-background-color: #FAFAFA;
+    -fx-padding: 0 10 10;
+    -fx-border-color: transparent transparent #B0BEC5 transparent;
+}
+
+.contact-box:hover {
+    -fx-cursor: hand;
+    -fx-background-color: #E8EAF6;
+    -fx-padding: 0 10 10;
+    -fx-border-color: transparent transparent #B0BEC5 transparent;
+}
+
+.contact-box:focused {
+    -fx-background-color: #E8EAF6;
+    -fx-padding: 0 10 10;
+    -fx-opacity: 0.9;
+}

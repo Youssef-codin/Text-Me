@@ -8,6 +8,7 @@ import arch.joe.app.Contact;
 import arch.joe.client.GUI.Utils;
 import arch.joe.client.GUI.Messenger.Components.ChatBubble;
 import arch.joe.client.GUI.Messenger.Components.ContactBox;
+import arch.joe.client.GUI.Messenger.SearchPopUp.SearchPopUp;
 import arch.joe.db.UserDao;
 import de.jensd.fx.glyphs.materialicons.*;
 import io.github.palexdev.materialfx.controls.MFXButton;
@@ -18,20 +19,12 @@ import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class MessengerController implements Initializable {
@@ -124,67 +117,8 @@ public class MessengerController implements Initializable {
                 .add(new ContactBox(new Contact("joe", "ur mama so fat she couldnt even eat the earch", "19/01/2021")));
     }
 
-    public void addUser() {
-
-        Stage popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Search Contacts");
-
-        VBox searchPane = new VBox(15);
-        searchPane.setPadding(new Insets(15));
-        searchPane.setStyle("-fx-background-color: #f9f9f9; -fx-border-radius: 10; -fx-background-radius: 10;");
-
-        Label titleLabel = new Label("Add a Contact");
-        titleLabel.setFont(Font.font("Inter Display SemiBold", 18));
-        titleLabel.setTextFill(Color.web("#212121"));
-        searchPane.getChildren().add(titleLabel);
-
-        HBox searchBox = new HBox(10); // Spacing between search field and button
-        searchBox.setAlignment(Pos.CENTER_LEFT);
-
-        MFXTextField searchField = new MFXTextField();
-        searchField.setPromptText("Search for contacts...");
-        searchField.setPrefWidth(250);
-        searchField.setStyle("-fx-font-size: 14px; -fx-background-radius: 10; -fx-border-color: #b0bec5;");
-
-        MFXButton searchButton = new MFXButton("Search");
-        searchButton.setStyle(
-                "-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 10;");
-        searchButton.setPrefHeight(30);
-        searchButton.setPrefWidth(80);
-
-        searchBox.getChildren().addAll(searchField, searchButton);
-        searchPane.getChildren().add(searchBox);
-
-        VBox contactContainer = new VBox(10);
-
-        contactContainer.getChildren()
-                .add(new ContactBox(new Contact("joe", "ur mama so fat she couldnt even eat the earch", "19/01/2021")));
-        contactContainer
-                .setStyle("-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10;");
-        searchPane.getChildren().add(contactContainer);
-
-        searchButton.setOnAction(event -> {
-            String searchTerm = searchField.getText().trim();
-            if (!searchTerm.isEmpty()) {
-                contactContainer.getChildren().clear();
-                ArrayList<Contact> searchResults = fetchContactsFromDatabase(searchTerm);
-                for (Contact contact : searchResults) {
-                    ContactBox con = new ContactBox(contact);
-                    contactContainer.getChildren().add(con);
-                }
-            }
-        });
-
-        Scene popupScene = new Scene(searchPane, 350, 500);
-        String css = this.getClass().getResource("/arch/joe/client/CSS/Messenger.css").toExternalForm();
-        popupScene.getStylesheets().add(css);
-        popupStage.setScene(popupScene);
-        popupStage.show();
-    }
-
-    private ArrayList<Contact> fetchContactsFromDatabase(String searchTerm) {
-        return UserDao.searchUser(searchTerm);
+    public void addUser() throws Exception {
+        SearchPopUp.showPopUp();
     }
 
     public void sendMessage() {

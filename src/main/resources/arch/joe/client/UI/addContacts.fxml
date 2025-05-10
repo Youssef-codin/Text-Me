@@ -1,6 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXScrollPane?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-border-radius: 5em; -fx-background-radius: 5em;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" />
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="548.0" prefWidth="311.0" style="-fx-background-color: #F9F9F9;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="arch.joe.client.GUI.Messenger.SearchPopUp.SearchPopUpController">
+   <children>
+      <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="155.0" prefWidth="312.0" spacing="15.0" style="-fx-padding: 20; -fx-background-color: #263238; -fx-border-color: transparent   transparent #E0E0E0  transparent; -fx-border-width: 2;">
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <children>
+            <MFXTextField fx:id="searchField" animated="false" floatMode="DISABLED" floatingText="Search" prefHeight="53.0" prefWidth="268.0" promptText="Search with username or email" style="-fx-border-color: transparent; -fx-background-radius: 12; -fx-border-radius: 12; -fx-background-color: #B0BEC5; -fx-text-fill: #607D8B; -fx-padding: 0 0 0 15; -fx-font-family: Inter Display Light; -fx-font-size: 14;">
+               <font>
+                  <Font name="Inter Display Light" size="15.0" />
+               </font>
+               <textFill>
+                  <Color green="0.699999988079071" blue="1.0" opacity="0.8700000047683716" />
+               </textFill>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="15.0" />
+               </padding>
+            </MFXTextField>
+            <HBox alignment="CENTER" prefHeight="21.0" prefWidth="244.0" spacing="15.0">
+               <children>
+                  <MFXButton fx:id="searchButton" buttonType="RAISED" depthLevel="LEVEL1" onAction="#searchAction" prefHeight="39.0" prefWidth="96.0" rippleColor="WHITE" style="-fx-background-radius: 5em; -fx-background-color: #1976D2; -fx-text-fill: #212121; -fx-border-radius: 5em; -fx-padding: 0.5em 1em; -fx-border-insets: 0;" stylesheets="@../CSS/addContacts.css" text="Search">
+                     <font>
+                        <Font name="Inter Display Light" size="15.0" />
+                     </font>
+                     <effect>
+                        <Blend mode="COLOR_DODGE" opacity="0.38" />
+                     </effect>
+                  </MFXButton>
+                  <MFXButton fx:id="addButton" buttonType="RAISED" depthLevel="LEVEL1" onAction="#addAction" prefHeight="39.0" prefWidth="96.0" rippleColor="WHITE" style="-fx-background-radius: 5em; -fx-background-color: transparent; -fx-border-width: 2; -fx-border-color: #1976D2; -fx-text-fill: #8a8a8a; -fx-border-radius: 5em; -fx-padding: 0.5em 1em;" text="Add" textFill="#515151">
+                     <font>
+                        <Font name="Inter Display Light" size="15.0" />
+                     </font>
+                     <effect>
+                        <Blend mode="COLOR_DODGE" opacity="0.38" />
+                     </effect>
+                     <stylesheets>
+                        <URL value="@../CSS/Login.css" />
+                        <URL value="@../CSS/addContacts.css" />
+                     </stylesheets>
+                  </MFXButton>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets left="2.0" />
+               </padding>
+            </HBox>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </VBox>
+      <MFXScrollPane fx:id="contactsScroll" focusTraversable="false" hbarPolicy="NEVER" hmax="0.0" prefHeight="465.0" prefWidth="307.0" style="-fx-border-color: #B0BEC5; -fx-background-color: transparent; -fx-padding: 0 0 0 1;" vbarPolicy="ALWAYS" vmax="1.1">
+         <content>
+            <VBox fx:id="contactsView" prefHeight="456.0" prefWidth="293.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
+         </content>
+      </MFXScrollPane>
+   </children>
+</VBox>

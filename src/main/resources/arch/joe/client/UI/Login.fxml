@@ -14,7 +14,7 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="726.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="arch.joe.client.GUI.LoginController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="726.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="arch.joe.client.GUI.Login.LoginController">
    <children>
       <MFXButton fx:id="loginButton" buttonType="RAISED" depthLevel="LEVEL1" layoutX="411.0" layoutY="286.0" onAction="#login" prefHeight="39.0" prefWidth="96.0" rippleColor="WHITE" style="-fx-background-radius: 5em; -fx-background-color: #1976D2; -fx-text-fill: #212121; -fx-border-radius: 5em; -fx-padding: 0.5em 1em; -fx-border-insets: 0;" stylesheets="@../CSS/Login.css" text="Login">
          <font>
