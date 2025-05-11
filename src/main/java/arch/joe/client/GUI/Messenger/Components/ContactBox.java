@@ -1,10 +1,16 @@
 package arch.joe.client.GUI.Messenger.Components;
 
+import java.io.IOException;
+import java.security.Timestamp;
+
 import arch.joe.app.Contact;
+import arch.joe.client.GUI.Messenger.SearchPopUp.SearchPopUpController;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -13,6 +19,9 @@ import javafx.scene.paint.Paint;
 public class ContactBox extends HBox {
 
     private Contact contactInfo;
+    private Label username;
+    private Label lastMsg;
+    private Label timeStamp;
 
     public ContactBox(Contact contactInfo) {
         this.contactInfo = contactInfo;
@@ -25,23 +34,36 @@ public class ContactBox extends HBox {
         this.setFocusTraversable(true);
         this.getStyleClass().add("contact-box");
 
-        this.setOnMouseClicked(e -> contactAction());
+        this.setOnMouseClicked(e -> {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/arch/joe/client/UI/addContacts.fxml"));
+            Parent root;
+            try {
+                root = loader.load();
+                SearchPopUpController controller = loader.getController();
+                System.out.println(this);
+                controller.setFocusedBox(this);
+                this.requestFocus();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
 
         FontAwesomeIconView userIcon = new FontAwesomeIconView(FontAwesomeIcon.USER_CIRCLE_ALT);
         userIcon.setFill(Paint.valueOf("#263238"));
         userIcon.setGlyphSize(40);
 
-        Label username = new Label(contactInfo.getName());
+        username = new Label(contactInfo.getName());
         username.prefWidth(128);
         username.setMaxSize(128, 0);
         username.setStyle("-fx-font-family: 'Inter Display SemiBold'; -fx-font-size: 17px; -fx-text-fill: #212121;");
 
-        Label lastMsg = new Label(contactInfo.getLastMsg());
+        lastMsg = new Label(contactInfo.getLastMsg());
         lastMsg.setMinSize(140, 0);
         lastMsg.setStyle(
                 "-fx-font-family: 'Inter Display'; -fx-font-size: 13px; -fx-text-fill: #607d8b;-fx-background-color: transparent;");
 
-        Label timeStamp = new Label(contactInfo.getTimeStamp());
+        timeStamp = new Label(contactInfo.getTimeStamp());
         timeStamp.setAlignment(Pos.TOP_CENTER);
         timeStamp.setMinSize(70, 50);
         timeStamp.prefHeight(50);
@@ -60,11 +82,18 @@ public class ContactBox extends HBox {
         this.getChildren().addAll(userIcon, contactInfoBox, timeStamp);
     }
 
-    private void contactAction() {
-        this.requestFocus();
-    }
-
     public Contact getContactInfo() {
         return contactInfo;
+    }
+
+    public void updateContact(Contact contact) {
+        this.contactInfo = contact;
+
+        username.setText(contactInfo.getName());
+        if (lastMsg != null) {
+            lastMsg.setText(contactInfo.getLastMsg());
+            timeStamp.setText(contactInfo.getTimeStamp());
+
+        }
     }
 }

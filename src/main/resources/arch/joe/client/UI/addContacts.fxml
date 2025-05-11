@@ -11,7 +11,6 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="548.0" prefWidth="311.0" style="-fx-background-color: #F9F9F9;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="arch.joe.client.GUI.Messenger.SearchPopUp.SearchPopUpController">
    <children>
       <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="155.0" prefWidth="312.0" spacing="15.0" style="-fx-padding: 20; -fx-background-color: #263238; -fx-border-color: transparent   transparent #E0E0E0  transparent; -fx-border-width: 2;">
@@ -73,7 +72,7 @@
       </VBox>
       <MFXScrollPane fx:id="contactsScroll" focusTraversable="false" hbarPolicy="NEVER" hmax="0.0" prefHeight="465.0" prefWidth="307.0" style="-fx-border-color: #B0BEC5; -fx-background-color: transparent; -fx-padding: 0 0 0 1;" vbarPolicy="ALWAYS" vmax="1.1">
          <content>
-            <VBox fx:id="contactsView" prefHeight="456.0" prefWidth="293.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
+            <VBox fx:id="searchContactsView" prefHeight="456.0" prefWidth="293.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
          </content>
       </MFXScrollPane>
    </children>

@@ -2,6 +2,7 @@ package arch.joe.client.GUI.Messenger;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.ResourceBundle;
 
 import arch.joe.app.Contact;
@@ -9,7 +10,6 @@ import arch.joe.client.GUI.Utils;
 import arch.joe.client.GUI.Messenger.Components.ChatBubble;
 import arch.joe.client.GUI.Messenger.Components.ContactBox;
 import arch.joe.client.GUI.Messenger.SearchPopUp.SearchPopUp;
-import arch.joe.db.UserDao;
 import de.jensd.fx.glyphs.materialicons.*;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXScrollPane;
@@ -62,7 +62,7 @@ public class MessengerController implements Initializable {
     @FXML
     private Label currentUser;
     @FXML
-    private VBox contactsView;
+    public VBox contactsView;
     @FXML
     private MFXScrollPane chatScroll;
     @FXML
@@ -74,8 +74,7 @@ public class MessengerController implements Initializable {
 
     private boolean isAnimating = false;
 
-    private ArrayList<Contact> userContacts = new ArrayList<>(); // make smth that gets contacts
-    private ArrayList<Contact> searchContacts = new ArrayList<>();
+    private static LinkedHashSet<ContactBox> userContacts = new LinkedHashSet<>(); // make smth that gets contacts
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -112,13 +111,21 @@ public class MessengerController implements Initializable {
                 Platform.runLater(() -> Utils.animateScrollToBottom(chatScroll, 200));
             }
         });
-
-        contactsView.getChildren()
-                .add(new ContactBox(new Contact("joe", "ur mama so fat she couldnt even eat the earch", "19/01/2021")));
     }
 
     public void addUser() throws Exception {
-        SearchPopUp.showPopUp();
+        SearchPopUp.showPopUp(this);
+    }
+
+    public void updateContactsView(ContactBox contactBox) {
+        userContacts.add(contactBox);
+        for (ContactBox box : userContacts) {
+            System.out.println(box.getContactInfo().getName());
+        }
+        contactsView.getChildren().clear();
+        contactsView.getChildren().addAll(userContacts);
+        contactsView.layout();
+
     }
 
     public void sendMessage() {
