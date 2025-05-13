@@ -124,24 +124,46 @@ public class ChatClient extends WebSocketClient {
         }
     }
 
-    public JsonObject login(String name, String hashedPass) throws Exception {
+    // 0 correct password
+    // -1 wrong passwrod
+    // -2 username not found
+    public int login(String name, String unhashedPass) throws Exception {
 
         String salt = this.getSalt(name);
 
         if (salt.equals("none")) {
             System.out.println("username not found.");
-            return null;
+            return -2;
 
         } else {
-            JsonObject obj = this.checkPassword(name, Crypto.stringToHash(hashedPass, salt));
-
+            JsonObject obj = this.loginHelper(name, Crypto.stringToHash(unhashedPass, salt));
             if (obj == null) {
-                return null;
+                return -1;
 
             } else {
                 this.username = name;
-                return obj;
+                this.setToken(obj.get("token").getAsString());
+                return 0;
             }
+        }
+    }
+
+    private JsonObject loginHelper(String name, String hashedPass) throws Exception {
+        JsonObject request = new JsonObject();
+        request.addProperty("type", "login");
+        request.addProperty("username", name);
+        request.addProperty("password", hashedPass);
+
+        send(request.toString());
+        String response = waitForMessage();
+
+        JsonObject obj = parseJson(response);
+        String auth = obj.get("authorized").getAsString();
+
+        if (auth.equals("f")) {
+            return null;
+        } else {
+            return obj;
         }
     }
 
@@ -181,25 +203,6 @@ public class ChatClient extends WebSocketClient {
         } else {
             return true;
 
-        }
-    }
-
-    private JsonObject checkPassword(String name, String hashedPass) throws Exception {
-        JsonObject request = new JsonObject();
-        request.addProperty("type", "login");
-        request.addProperty("username", name);
-        request.addProperty("password", hashedPass);
-
-        send(request.toString());
-        String response = waitForMessage();
-
-        JsonObject obj = parseJson(response);
-        String auth = obj.get("authorized").getAsString();
-
-        if (auth.equals("f")) {
-            return null;
-        } else {
-            return obj;
         }
     }
 
@@ -333,14 +336,14 @@ public class ChatClient extends WebSocketClient {
         }
     }
 
-    public ArrayList<Msg> msgHistory(String name1, String name2) throws Exception {
+    public ArrayList<Msg> msgHistory() throws Exception {
 
         Gson gson = new Gson();
 
         JsonObject historyRequest = new JsonObject();
         historyRequest.addProperty("type", "history_request");
-        historyRequest.addProperty("name1", name1);
-        historyRequest.addProperty("name2", name2);
+        historyRequest.addProperty("sender", this.username);
+        historyRequest.addProperty("receiver", currentReceiver);
 
         send(historyRequest.toString());
         String response = waitForMessage();
@@ -355,14 +358,16 @@ public class ChatClient extends WebSocketClient {
 
         for (JsonElement elem : jsonArray) {
             Msg msg = gson.fromJson(elem, Msg.class);
-            msgsList.add(msg);
             String sender = msg.getMsgSender();
             PrivateKey rsaKey = readPrivateKey(getUsername());
             String decryptedMsg = decipherMsg(msg, rsaKey);
 
             if (decryptedMsg != null) {
                 System.out.println(sender + " (history): " + decryptedMsg);
+                msg.setMsg(decryptedMsg);
             }
+
+            msgsList.add(msg);
         }
 
         return msgsList;

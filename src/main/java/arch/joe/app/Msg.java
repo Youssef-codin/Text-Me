@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 public class Msg {
 
-    private final String msg;
+    private String msg;
     private final String msgSender;
     private final String aesSender;
     private final String msgReceiver;
@@ -13,7 +13,6 @@ public class Msg {
     private final long timeStamp;
 
     public Msg(String msg, String msgSender, String msgReceiver, String aesSender, String aesReceiver, String aesIv) {
-        Timestamp ts = new Timestamp(System.currentTimeMillis());
 
         this.msg = msg;
         this.msgSender = msgSender;
@@ -21,7 +20,7 @@ public class Msg {
         this.aesSender = aesSender;
         this.aesReceiver = aesReceiver;
         this.aesIv = aesIv;
-        this.timeStamp = ts.getTime();
+        this.timeStamp = System.currentTimeMillis();
     }
 
     public Msg(String msg, String msgSender, String msgReceiver, long time, String aesSender, String aesReceiver,
@@ -34,6 +33,10 @@ public class Msg {
         this.aesReceiver = aesReceiver;
         this.aesIv = aesIv;
         this.timeStamp = time;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public String getMsg() {

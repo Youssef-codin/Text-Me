@@ -1,16 +1,11 @@
 package arch.joe.client.GUI.Messenger.Components;
 
-import java.io.IOException;
-import java.security.Timestamp;
-
 import arch.joe.app.Contact;
-import arch.joe.client.GUI.Messenger.SearchPopUp.SearchPopUpController;
+import arch.joe.client.GUI.Utils;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -22,8 +17,10 @@ public class ContactBox extends HBox {
     private Label username;
     private Label lastMsg;
     private Label timeStamp;
+    @SuppressWarnings("unused")
+    private boolean isMessengerClass;
 
-    public ContactBox(Contact contactInfo) {
+    public ContactBox(Contact contactInfo, boolean isMessengerClass) {
         this.contactInfo = contactInfo;
 
         this.setAlignment(Pos.CENTER_LEFT);
@@ -35,18 +32,13 @@ public class ContactBox extends HBox {
         this.getStyleClass().add("contact-box");
 
         this.setOnMouseClicked(e -> {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/arch/joe/client/UI/addContacts.fxml"));
-            Parent root;
-            try {
-                root = loader.load();
-                SearchPopUpController controller = loader.getController();
-                System.out.println(this);
-                controller.setFocusedBox(this);
-                this.requestFocus();
-            } catch (IOException ex) {
-                ex.printStackTrace();
+            if (isMessengerClass) {
+                Utils.mController.setFocusedBox(this);
+            } else {
+                Utils.sController.setFocusedBox(this);
             }
+            this.requestFocus();
+
         });
 
         FontAwesomeIconView userIcon = new FontAwesomeIconView(FontAwesomeIcon.USER_CIRCLE_ALT);

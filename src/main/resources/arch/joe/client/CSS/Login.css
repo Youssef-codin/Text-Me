@@ -1,3 +1,7 @@
+.wrong-field{
+    -fx-border-color: transparent transparent #F44336 transparent !important;
+}
+
 .mfx-text-field:hover,
 .mfx-password-field:hover {
     -fx-border-color: #1976D2 !important;

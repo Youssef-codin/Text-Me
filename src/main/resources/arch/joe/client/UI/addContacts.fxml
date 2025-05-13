@@ -34,7 +34,7 @@
             </MFXTextField>
             <HBox alignment="CENTER" prefHeight="21.0" prefWidth="244.0" spacing="15.0">
                <children>
-                  <MFXButton fx:id="searchButton" buttonType="RAISED" depthLevel="LEVEL1" onAction="#searchAction" prefHeight="39.0" prefWidth="96.0" rippleColor="WHITE" style="-fx-background-radius: 5em; -fx-background-color: #1976D2; -fx-text-fill: #212121; -fx-border-radius: 5em; -fx-padding: 0.5em 1em; -fx-border-insets: 0;" stylesheets="@../CSS/addContacts.css" text="Search">
+                  <MFXButton fx:id="searchButton" buttonType="RAISED" defaultButton="true" depthLevel="LEVEL1" onAction="#searchAction" prefHeight="39.0" prefWidth="96.0" rippleColor="WHITE" style="-fx-background-radius: 5em; -fx-background-color: #1976D2; -fx-text-fill: #212121; -fx-border-radius: 5em; -fx-padding: 0.5em 1em; -fx-border-insets: 0;" stylesheets="@../CSS/addContacts.css" text="Search">
                      <font>
                         <Font name="Inter Display Light" size="15.0" />
                      </font>

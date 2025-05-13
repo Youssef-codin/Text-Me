@@ -133,7 +133,7 @@ public class ChatServer {
     @OnError
     public void onError(Session sesh, Throwable e) {
 
-        System.err.println("connection fucked for: " + sesh.getId());
+        System.err.println("connection cooked for: " + sesh.getId());
         String name = seshIDToName.get(sesh.getId());
         removeSeshAndName(sesh, name);
         e.printStackTrace();
@@ -400,10 +400,10 @@ public class ChatServer {
 
         Gson gson = new Gson();
 
-        String name1 = obj.get("name1").getAsString();
-        String name2 = obj.get("name2").getAsString();
+        String sender = obj.get("sender").getAsString();
+        String receiver = obj.get("receiver").getAsString();
 
-        ArrayList<Msg> msgs = MessageDao.getMsgs(name1, name2);
+        ArrayList<Msg> msgs = MessageDao.getMsgs(sender, receiver);
         JsonArray msgArray = new JsonArray();
 
         for (Msg msg : msgs) {

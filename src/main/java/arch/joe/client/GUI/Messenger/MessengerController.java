@@ -2,10 +2,11 @@ package arch.joe.client.GUI.Messenger;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 
-import arch.joe.app.Contact;
+import animatefx.animation.SlideInRight;
+import arch.joe.app.Msg;
 import arch.joe.client.GUI.Utils;
 import arch.joe.client.GUI.Messenger.Components.ChatBubble;
 import arch.joe.client.GUI.Messenger.Components.ContactBox;
@@ -22,13 +23,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class MessengerController implements Initializable {
 
+    @FXML
+    private HBox anchorHbox;
     @FXML
     private MFXButton sendButton;
     @FXML
@@ -60,7 +63,7 @@ public class MessengerController implements Initializable {
     @FXML
     private MaterialIconView chatIcon;
     @FXML
-    private Label currentUser;
+    private Label currentReceiver;
     @FXML
     public VBox contactsView;
     @FXML
@@ -72,14 +75,22 @@ public class MessengerController implements Initializable {
     @FXML
     private MFXTextField searchField;
 
+    Stage stage;
+
     private boolean isAnimating = false;
 
-    private static LinkedHashSet<ContactBox> userContacts = new LinkedHashSet<>(); // make smth that gets contacts
+    // name, box
+    private static LinkedHashMap<String, ContactBox> userContacts = new LinkedHashMap<>(); // TODO: save to file and get
+                                                                                           // it from there
+
+    private static ContactBox focusedBox;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // MaterialIcon.
         // FontAwesomeIcon.u
+
+        Utils.mController = this;
 
         Utils.clipToRounded(sendButton, 20, 20);
         Utils.clipToRounded(shareButton, 20, 20);
@@ -111,40 +122,102 @@ public class MessengerController implements Initializable {
                 Platform.runLater(() -> Utils.animateScrollToBottom(chatScroll, 200));
             }
         });
-    }
 
-    public void addUser() throws Exception {
-        SearchPopUp.showPopUp(this);
+        sendButton.setDisable(true);
     }
 
     public void updateContactsView(ContactBox contactBox) {
-        userContacts.add(contactBox);
-        for (ContactBox box : userContacts) {
-            System.out.println(box.getContactInfo().getName());
-        }
-        contactsView.getChildren().clear();
-        contactsView.getChildren().addAll(userContacts);
-        contactsView.layout();
+        if (!userContacts.containsKey(contactBox.getContactInfo().getName())) {
+            userContacts.put(contactBox.getContactInfo().getName(), contactBox);
+            contactsView.getChildren().clear();
+            contactsView.getChildren().addAll(userContacts.values());
+            contactsView.layout();
+            SlideInRight anim = new SlideInRight(contactBox);
+            anim.setSpeed(1.0);
+            anim.play();
 
+        }
     }
 
+    // buttons
     public void sendMessage() {
 
         String msg = messageField.getText().trim();
 
         if (!msg.isEmpty()) {
             chatBox.getChildren().addAll(new ChatBubble(msg, true, "10:00 AM"));
-            chatBox.getChildren().addAll(new ChatBubble(msg, false, "10:00 AM"));
 
             messageField.clear();
         }
     }
 
-    public void sendMessageEnter(KeyEvent event) {
+    public void addUser() throws Exception {
+        SearchPopUp.showPopUp();
+    }
 
-        if (event.getCode() == KeyCode.ENTER) {
-            event.consume();
-            sendMessage();
+    public void searchUserContacts() {
+
+        String searchTerm = searchField.getText();
+        contactsView.getChildren().clear();
+
+        if (searchTerm.isEmpty()) {
+            contactsView.getChildren().addAll(userContacts.values());
+
+        } else {
+            for (String name : userContacts.keySet()) {
+                if (name.contains(searchTerm)) {
+                    contactsView.getChildren().add(userContacts.get(name));
+                }
+            }
+        }
+    }
+
+    public void logout() {
+        stage = (Stage) anchorHbox.getScene().getWindow();
+        stage.close();
+    }
+
+    // misc
+    public LinkedHashMap<String, ContactBox> getUserContacts() {
+        return userContacts;
+    }
+
+    public void setFocusedBox(ContactBox box) {
+        if (focusedBox == null) {
+            sendButton.setDisable(false);
+            box.getStyleClass().set(0, "focused-contact-box");
+            Utils.c.setCurrentReceiver(box.getContactInfo().getName());
+            focusedBox = box;
+
+        } else {
+            focusedBox.getStyleClass().set(0, "contact-box");
+            box.getStyleClass().set(0, "focused-contact-box");
+            Utils.c.setCurrentReceiver(box.getContactInfo().getName());
+            focusedBox = box;
+        }
+
+        String name = box.getContactInfo().getName();
+        Platform.runLater(() -> {
+            currentReceiver.setText(name);
+            try {
+                getMsgHistory();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void getMsgHistory() throws Exception {
+        ArrayList<Msg> history = Utils.c.msgHistory();
+        chatBox.getChildren().clear();
+        if (!history.isEmpty()) {
+            for (Msg msg : history) {
+                if (msg.getMsgSender().equals(Utils.c.getUsername())) {
+                    chatBox.getChildren().add(new ChatBubble(msg.getMsg(), true, Utils.timeFormat(msg.msgTime())));
+                } else {
+                    chatBox.getChildren().add(new ChatBubble(msg.getMsg(), false, Utils.timeFormat(msg.msgTime())));
+                }
+            }
         }
     }
 

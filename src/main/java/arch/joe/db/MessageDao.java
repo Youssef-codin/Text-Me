@@ -47,28 +47,28 @@ public class MessageDao {
         }
     }
 
-    public static ArrayList<Msg> getMsgs(String user1, String user2) {
+    public static ArrayList<Msg> getMsgs(String sender, String receiver) {
 
         ArrayList<Msg> messages = new ArrayList<>();
 
         try (Connection conn = Database.connect()) {
             PreparedStatement ps = conn.prepareStatement(
                     "SELECT * FROM msgs WHERE (msg_sender = ? AND msg_receiver = ?) OR (msg_sender = ? AND msg_receiver = ?) ORDER BY time_stamp ASC");
-            ps.setString(1, user1);
-            ps.setString(2, user2);
-            ps.setString(3, user2);
-            ps.setString(4, user1);
+            ps.setString(1, sender);
+            ps.setString(2, receiver);
+            ps.setString(3, receiver);
+            ps.setString(4, sender);
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 String message = rs.getString("msg");
-                String sender = rs.getString("msg_sender");
-                String receiver = rs.getString("msg_receiver");
+                String send = rs.getString("msg_sender");
+                String receive = rs.getString("msg_receiver");
                 String aesSender = rs.getString("aes_sender");
                 String aesReceiver = rs.getString("aes_receiver");
                 String aesIv = rs.getString("aes_iv");
                 long time = rs.getLong("time_stamp");
-                messages.add(new Msg(message, sender, receiver, time, aesSender, aesReceiver, aesIv));
+                messages.add(new Msg(message, send, receive, time, aesSender, aesReceiver, aesIv));
             }
 
         } catch (SQLException e) {

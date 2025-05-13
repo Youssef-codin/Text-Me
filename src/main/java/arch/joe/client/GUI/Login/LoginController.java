@@ -1,20 +1,27 @@
 package arch.joe.client.GUI.Login;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import animatefx.animation.SlideInLeft;
+import arch.joe.client.ChatClient;
 import arch.joe.client.GUI.Utils;
+import arch.joe.client.GUI.Messenger.Messenger;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXPasswordField;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class LoginController implements Initializable {
@@ -27,6 +34,8 @@ public class LoginController implements Initializable {
     private MFXTextField userField;
     @FXML
     private MFXPasswordField passwordField;
+    @FXML
+    private Label errorField;
     @FXML
     private ImageView drawing;
     @FXML
@@ -47,6 +56,53 @@ public class LoginController implements Initializable {
         scaleAnimations(loginButton, 1.05);
         scaleAnimations(registerButton, 1.05);
 
+        try {
+            Utils.c = new ChatClient(new URI(
+                    "ws://localhost:8025/text-me/chat"));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        Utils.c.connect();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Platform.runLater(() -> {
+            userField.requestFocus();
+        });
+    }
+
+    public void login(ActionEvent e) throws Exception {
+        String username = userField.getText();
+        String password = passwordField.getText();
+
+        int response = Utils.c.login(username, password);
+
+        if (username.isEmpty() && password.isEmpty()) {
+            return;
+        }
+
+        if (response == -1) {
+            passwordField.getStyleClass().add("wrong-field");
+            errorField.setText("Incorrect password.");
+            errorField.setVisible(true);
+
+        } else if (response == -2) {
+            userField.getStyleClass().add("wrong-field");
+            errorField.setText("Username not found.");
+            errorField.setVisible(true);
+
+        } else {
+
+            Stage loginStage = (Stage) loginButton.getScene().getWindow();
+            loginStage.close();
+            Stage messengerStage = new Stage();
+            Messenger messengerApp = new Messenger();
+            messengerApp.start(messengerStage);
+
+        }
     }
 
     private void animationForDrawings(Node node) {
@@ -90,9 +146,5 @@ public class LoginController implements Initializable {
 
             }
         });
-    }
-
-    public void login(ActionEvent e) {
-        System.out.println("login");
     }
 }

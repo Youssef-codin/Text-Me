@@ -16,7 +16,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="524.0" prefWidth="943.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="arch.joe.client.GUI.Messenger.MessengerController">
+<HBox fx:id="anchorHbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="524.0" prefWidth="943.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="arch.joe.client.GUI.Messenger.MessengerController">
    <children>
       <Pane prefHeight="524.0" prefWidth="70.0" style="-fx-background-color: #263238; -fx-border-color: transparent;">
          <children>
@@ -56,7 +56,7 @@
                   </MFXButton>
                </children>
             </VBox>
-            <MFXButton fx:id="logoutButton" accessibleHelp="Logout." depthLevel="LEVEL0" layoutX="11.0" layoutY="470.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="white_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
+            <MFXButton fx:id="logoutButton" accessibleHelp="Logout." depthLevel="LEVEL0" layoutX="11.0" layoutY="470.0" minHeight="-Infinity" minWidth="-Infinity" onAction="#logout" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="white_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
                <font>
                   <Font size="14.0" />
                </font>
@@ -84,12 +84,12 @@
                         <Color green="0.699999988079071" blue="1.0" opacity="0.8700000047683716" />
                      </textFill>
                   </MFXTextField>
-                  <MFXButton fx:id="searchButton" depthLevel="LEVEL0" layoutX="21.0" layoutY="15.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="33.0" prefWidth="33.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
+                  <MFXButton fx:id="searchButton" depthLevel="LEVEL0" layoutX="21.0" layoutY="15.0" minHeight="-Infinity" minWidth="-Infinity" onAction="#searchUserContacts" prefHeight="33.0" prefWidth="33.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
                      <font>
                         <Font size="14.0" />
                      </font>
                      <graphic>
-                        <MaterialIconView fx:id="searchIcon" fill="#cfd8dc" glyphName="SEARCH" size="35" wrappingWidth="30.0" />
+                        <MaterialIconView fx:id="searchIcon" fill="#cfd8dc" glyphName="SEARCH" size="35" translateX="-8.5" wrappingWidth="30.0" />
                      </graphic>
                   </MFXButton>
                   <MFXButton fx:id="addButton" depthLevel="LEVEL0" layoutX="266.0" layoutY="15.0" minHeight="-Infinity" minWidth="-Infinity" onAction="#addUser" prefHeight="33.0" prefWidth="33.0" rippleAnimateShadow="true" style="-fx-text-fill: red;" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
@@ -113,7 +113,7 @@
          <children>
             <AnimatedHBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="566.0" spacing="15.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #B0BEC5 transparent; -fx-padding: 0 10;">
                <children>
-                  <Label fx:id="currentUser" graphicTextGap="10.0" prefHeight="28.0" prefWidth="169.0" style="-fx-background-color: #ECEFF1;" text="User" textAlignment="CENTER" textFill="#212121">
+                  <Label fx:id="currentReceiver" graphicTextGap="10.0" prefHeight="28.0" prefWidth="317.0" style="-fx-background-color: #ECEFF1;" text="Add someone to start talking!" textAlignment="CENTER" textFill="#212121">
                      <font>
                         <Font name="Inter Display SemiBold" size="22.0" />
                      </font>
@@ -134,7 +134,7 @@
             </MFXScrollPane>
             <Pane prefHeight="62.0" prefWidth="571.0" style="-fx-background-color: #F5F5F5; -fx-border-color: #BDBDBD transparent;">
                <children>
-                  <MFXTextField fx:id="messageField" borderGap="1.0" floatMode="ABOVE" layoutX="108.0" onKeyPressed="#sendMessageEnter" prefHeight="62.0" prefWidth="392.0" promptText="Say anything, securely..." style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0 20; -fx-border-color: transparent transparent transparent #BDBDBD; -fx-border-radius: 0; -fx-background-radius: 0;" stylesheets="@../CSS/Messenger.css">
+                  <MFXTextField fx:id="messageField" borderGap="1.0" floatMode="ABOVE" layoutX="108.0" prefHeight="62.0" prefWidth="392.0" promptText="Say anything, securely..." style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0 20; -fx-border-color: transparent transparent transparent #BDBDBD; -fx-border-radius: 0; -fx-background-radius: 0;" stylesheets="@../CSS/Messenger.css">
                      <font>
                         <Font name="Inter Display Light" size="15.0" />
                      </font>
@@ -159,7 +159,7 @@
                         <MaterialIconView fill="#1565c0" glyphName="LINK" size="35" styleClass="blue_icons" translateX="-2.0" wrappingWidth="34.0" />
                      </graphic>
                   </MFXButton>
-                  <MFXButton fx:id="sendButton" depthLevel="LEVEL0" layoutX="512.0" layoutY="8.0" minHeight="-Infinity" minWidth="-Infinity" onAction="#sendMessage" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="blue_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
+                  <MFXButton fx:id="sendButton" defaultButton="true" depthLevel="LEVEL0" layoutX="512.0" layoutY="8.0" minHeight="-Infinity" minWidth="-Infinity" onAction="#sendMessage" prefHeight="46.0" prefWidth="48.0" rippleAnimateShadow="true" style="-fx-text-fill: transparent;" styleClass="blue_button" stylesheets="@../CSS/Messenger.css" text="Custom" textFill="#064a86">
                      <font>
                         <Font size="14.0" />
                      </font>

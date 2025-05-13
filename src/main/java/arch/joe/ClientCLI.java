@@ -4,13 +4,11 @@ import java.net.URI;
 import java.security.KeyPair;
 import java.util.Scanner;
 
-import com.google.gson.JsonObject;
-
 import arch.joe.client.ChatClient;
 import arch.joe.client.ChatListener;
 import arch.joe.security.Crypto;
 
-public class mainClient {
+public class ClientCLI {
 
     public static void main(String[] args) throws Exception {
 
@@ -95,20 +93,19 @@ public class mainClient {
         System.out.print("Password: ");
         String pass = scanner.nextLine();
 
-        JsonObject obj = c.login(name, pass);
+        int response = c.login(name, pass);
 
-        if (obj == null) {
+        if (response == -1 || response == -2) {
             System.out.println("Bad login.");
 
         } else {
-            message(scanner, c, name, obj);
+            message(scanner, c, name);
 
         }
     }
 
-    private static void message(Scanner scanner, ChatClient c, String name, JsonObject obj)
+    private static void message(Scanner scanner, ChatClient c, String name)
             throws Exception {
-        c.setToken(obj.get("token").getAsString());
         System.out.print("Enter username of the person you want to text: ");
         String receiver = scanner.nextLine();
 
@@ -121,7 +118,7 @@ public class mainClient {
 
             System.out.println("send q at anytime to quit the chat.");
             c.setCurrentReceiver(receiver);
-            c.msgHistory(name, receiver);
+            c.msgHistory();
             Thread thread = new Thread(new ChatListener(c));
             thread.start();
             String message;

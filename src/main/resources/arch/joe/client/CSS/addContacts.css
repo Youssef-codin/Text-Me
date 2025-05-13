@@ -39,3 +39,10 @@
     -fx-padding: 0 10 10;
     -fx-opacity: 0.9;
 }
+
+.focused-contact-box {
+    -fx-background-color: #E8EAF6;
+    -fx-padding: 0 10 10;
+    -fx-border-color: transparent transparent #B0BEC5 transparent;
+    -fx-opacity: 0.9;
+}

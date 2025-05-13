@@ -55,6 +55,13 @@
     -fx-opacity: 0.9;
 }
 
+.focused-contact-box {
+    -fx-background-color: #E8EAF6;
+    -fx-padding: 0 10 10;
+    -fx-border-color: transparent transparent #B0BEC5 transparent;
+    -fx-opacity: 0.9;
+}
+
 .sender-bubble {
     -fx-background-color: #1565c0;
     -fx-padding: 8px 12px;

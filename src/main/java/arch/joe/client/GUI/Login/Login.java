@@ -1,6 +1,6 @@
 package arch.joe.client.GUI.Login;
 
-import fr.brouillard.oss.cssfx.CSSFX;
+import arch.joe.client.GUI.Utils;
 import io.github.palexdev.materialfx.theming.JavaFXThemes;
 import io.github.palexdev.materialfx.theming.MaterialFXStylesheets;
 import io.github.palexdev.materialfx.theming.UserAgentBuilder;
@@ -26,7 +26,6 @@ public class Login extends Application {
                          // check its documentation)
                 .setGlobal(); // Finally, sets the produced stylesheet as the global User-Agent stylesheet
 
-        CSSFX.start();
         Parent root = FXMLLoader.load(getClass().getResource("/arch/joe/client/UI/Login.fxml"));
         Scene scene = new Scene(root, Color.PINK);
         String css = this.getClass().getResource("/arch/joe/client/CSS/Login.css").toExternalForm();
@@ -35,7 +34,12 @@ public class Login extends Application {
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+    }
 
+    @Override
+    public void stop() {
+        Utils.c.close();
+        System.exit(0);
     }
 
     public static void main(String[] args) {
