@@ -29,13 +29,13 @@ I wanted to make a side-project that would combine Networking, Database manageme
 ## - Previews
 
 *Main Chat Interface:*
-![Main Chat UI](31.GIF)
+![Main Chat UI](previews/31.mp4)
 
 *Contact List & Search:*
-![Contact List UI](21.GIF)
+![Contact List UI](previews/21.mp4)
 
 *Login Screen:*
-![Login UI](11.GIF)
+![Login UI](previews/11.mp4)
 
 ## - Getting Started
 
