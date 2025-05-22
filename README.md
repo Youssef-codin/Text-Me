@@ -35,7 +35,9 @@ I wanted to make a side-project that would combine Networking, Database manageme
 ![Contact List UI](previews/21.mp4)
 
 *Login Screen:*
-![Login UI](previews/11.GIF)
+
+
+![Login UI](previews/11.gif)
 
 ## - Getting Started
 
