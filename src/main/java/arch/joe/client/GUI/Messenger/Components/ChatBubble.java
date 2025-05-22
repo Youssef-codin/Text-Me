@@ -8,7 +8,11 @@ import javafx.scene.text.Text;
 
 public class ChatBubble extends HBox {
 
+    private boolean isSender;
+
     public ChatBubble(String msg, boolean isSender, String time) {
+        this.isSender = isSender;
+
         this.setMaxWidth(Double.MAX_VALUE);
         this.setMinHeight(40);
         this.setPrefHeight(USE_COMPUTED_SIZE);
@@ -41,5 +45,13 @@ public class ChatBubble extends HBox {
 
         msgBox.getChildren().addAll(msgLabel, timeLabel);
         this.getChildren().add(msgBox);
+    }
+
+    public boolean isSender() {
+        return isSender;
+    }
+
+    public void setSender(boolean isSender) {
+        this.isSender = isSender;
     }
 }

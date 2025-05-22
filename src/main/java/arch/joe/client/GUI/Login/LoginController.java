@@ -95,7 +95,6 @@ public class LoginController implements Initializable {
             errorField.setVisible(true);
 
         } else {
-
             Stage loginStage = (Stage) loginButton.getScene().getWindow();
             loginStage.close();
             Stage messengerStage = new Stage();

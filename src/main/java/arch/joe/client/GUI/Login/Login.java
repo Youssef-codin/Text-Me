@@ -38,6 +38,12 @@ public class Login extends Application {
 
     @Override
     public void stop() {
+
+        System.out.println("STOPPING");
+        if (Utils.mController != null) {
+            Utils.mController.saveContacts();
+        }
+
         Utils.c.close();
         System.exit(0);
     }

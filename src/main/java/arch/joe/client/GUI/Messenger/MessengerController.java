@@ -1,13 +1,25 @@
 package arch.joe.client.GUI.Messenger;
 
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
+import java.util.Set;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import animatefx.animation.SlideInRight;
+import arch.joe.app.Contact;
 import arch.joe.app.Msg;
+import arch.joe.client.ChatMsgHandler;
 import arch.joe.client.GUI.Utils;
+import arch.joe.client.GUI.Login.Login;
 import arch.joe.client.GUI.Messenger.Components.ChatBubble;
 import arch.joe.client.GUI.Messenger.Components.ContactBox;
 import arch.joe.client.GUI.Messenger.SearchPopUp.SearchPopUp;
@@ -80,10 +92,11 @@ public class MessengerController implements Initializable {
     private boolean isAnimating = false;
 
     // name, box
-    private static LinkedHashMap<String, ContactBox> userContacts = new LinkedHashMap<>(); // TODO: save to file and get
-                                                                                           // it from there
+    private static LinkedHashMap<String, ContactBox> userContacts = new LinkedHashMap<>();
 
     private static ContactBox focusedBox;
+
+    private static final Path contactsPath = Utils.TEXT_ME_PATH.resolve(Utils.c.getUsername() + "_contacts.json");
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -123,7 +136,20 @@ public class MessengerController implements Initializable {
             }
         });
 
+        if (contactsPath.toFile().exists()) {
+            readContacts();
+        }
+
         sendButton.setDisable(true);
+
+        Thread thread = new Thread(new ChatMsgHandler(false));
+        thread.start();
+
+        try {
+            Utils.c.getPending();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void updateContactsView(ContactBox contactBox) {
@@ -132,6 +158,7 @@ public class MessengerController implements Initializable {
             contactsView.getChildren().clear();
             contactsView.getChildren().addAll(userContacts.values());
             contactsView.layout();
+
             SlideInRight anim = new SlideInRight(contactBox);
             anim.setSpeed(1.0);
             anim.play();
@@ -140,15 +167,19 @@ public class MessengerController implements Initializable {
     }
 
     // buttons
-    public void sendMessage() {
+    public void sendMessage() throws Exception {
 
         String msg = messageField.getText().trim();
 
         if (!msg.isEmpty()) {
-            chatBox.getChildren().addAll(new ChatBubble(msg, true, "10:00 AM"));
-
+            chatBox.getChildren().add(new ChatBubble(msg, true, Utils.timeFormat(System.currentTimeMillis())));
+            Utils.c.sendMsg(msg);
             messageField.clear();
         }
+    }
+
+    public void receiveMessage(ChatBubble bubble) {
+        chatBox.getChildren().add(bubble);
     }
 
     public void addUser() throws Exception {
@@ -172,14 +203,52 @@ public class MessengerController implements Initializable {
         }
     }
 
-    public void logout() {
-        stage = (Stage) anchorHbox.getScene().getWindow();
+    public void logout() throws Exception {
+        System.out.println("LOGGING OUT");
+        saveContacts();
+        stage = (Stage) logoutButton.getScene().getWindow();
         stage.close();
+
+        Platform.runLater(() -> {
+            Stage loginStage = new Stage();
+            Login login = new Login();
+            try {
+                login.start(loginStage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    // misc
     public LinkedHashMap<String, ContactBox> getUserContacts() {
         return userContacts;
+    }
+
+    public void saveContacts() {
+        Set<String> contactNames = userContacts.keySet();
+        Gson gson = new Gson();
+
+        try (FileWriter writer = new FileWriter(contactsPath.toFile())) {
+            gson.toJson(contactNames, writer);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void readContacts() {
+        Gson gson = new Gson();
+        Type tt = new TypeToken<Set<String>>() {
+        }.getType();
+        try (FileReader reader = new FileReader(contactsPath.toFile())) {
+            Set<String> contactNames = gson.fromJson(reader, tt);
+            for (String name : contactNames) {
+                updateContactsView(new ContactBox(new Contact(name), true));
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setFocusedBox(ContactBox box) {
@@ -203,6 +272,20 @@ public class MessengerController implements Initializable {
                 getMsgHistory();
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        });
+    }
+
+    public void addMsgUi(ChatBubble bubble, Msg msg) {
+        // make sure to put all the code in the run later event or else u will get an
+        // error
+        Platform.runLater(() -> {
+            if (!bubble.isSender() && !userContacts.containsKey(msg.getMsgSender())) {
+                updateContactsView(new ContactBox(new Contact(msg.getMsgSender()), true));
+            } else {
+                if (msg.getMsgSender().equals(Utils.c.getCurrentReceiver())) {
+                    chatBox.getChildren().add(bubble);
+                }
             }
         });
     }

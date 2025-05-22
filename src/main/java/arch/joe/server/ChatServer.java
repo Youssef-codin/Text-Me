@@ -15,10 +15,13 @@ import jakarta.websocket.server.ServerEndpoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.glassfish.tyrus.server.Server;
 
@@ -114,8 +117,10 @@ public class ChatServer {
             case "register" -> registerRequest(sesh, obj);
             case "user_there" -> userThere(sesh, obj);
             case "history_request" -> historyRequest(sesh, obj);
+            case "pending_request" -> pendingRequest(sesh, obj);
             case "request_pub_key" -> keyRequest(sesh, obj);
             case "change_password" -> changePass(sesh, obj);
+
             default -> {
                 sesh.close(new CloseReason(CloseCodes.CANNOT_ACCEPT, "'Type' is empty"));
                 System.err.println("no type");
@@ -370,30 +375,30 @@ public class ChatServer {
         if (dbReceiver == null) {
             System.err.println("user Not found");
             msgStatus.addProperty("type", "user_not_found");
+            return;
+        }
+
+        Session receiverOnline = nameToSesh.get(msg.getMsgReceiver());
+
+        for (HashMap.Entry<String, Session> name : nameToSesh.entrySet()) {
+            System.out.println(name.getKey() + " -> " + name.getValue().getId());
+        }
+
+        if (receiverOnline == null) {
+            System.out.println("user is not online");
+            msgStatus.addProperty("type", "user_not_online");
 
         } else {
-            MessageDao.insertMsg(msg);
-            Session receiverOnline = nameToSesh.get(msg.getMsgReceiver());
-
-            for (HashMap.Entry<String, Session> name : nameToSesh.entrySet()) {
-                System.out.println(name.getKey() + " -> " + name.getValue().getId());
-            }
-
-            if (receiverOnline == null) {
-                System.out.println("user is not online");
-                msgStatus.addProperty("type", "user_not_online");
-
-            } else {
-                System.out.println("Sending message to receiver");
-                msgStatus.addProperty("type", "user_online");
-                obj.addProperty("time", msg.msgTime());
-                obj.addProperty("type", "receive_msg");
-                receiverOnline.getAsyncRemote().sendText(obj.toString());
-
-            }
-            sesh.getAsyncRemote().sendText(msgStatus.toString());
-
+            System.out.println("Sending message to receiver");
+            msg.setSent(true);
+            msgStatus.addProperty("type", "user_online");
+            obj.addProperty("time", msg.msgTime());
+            obj.addProperty("type", "receive_msg");
+            receiverOnline.getAsyncRemote().sendText(obj.toString());
         }
+
+        sesh.getAsyncRemote().sendText(msgStatus.toString());
+        MessageDao.insertMsg(msg);
     }
 
     private void historyRequest(Session sesh, JsonObject obj) {
@@ -403,7 +408,7 @@ public class ChatServer {
         String sender = obj.get("sender").getAsString();
         String receiver = obj.get("receiver").getAsString();
 
-        ArrayList<Msg> msgs = MessageDao.getMsgs(sender, receiver);
+        ArrayList<Msg> msgs = MessageDao.getMsgsSent(sender, receiver);
         JsonArray msgArray = new JsonArray();
 
         for (Msg msg : msgs) {
@@ -413,6 +418,27 @@ public class ChatServer {
 
         JsonObject response = new JsonObject();
         response.addProperty("type", "convo");
+        response.add("msgs", msgArray);
+
+        sesh.getAsyncRemote().sendText(response.toString());
+    }
+
+    private void pendingRequest(Session sesh, JsonObject obj) {
+
+        Gson gson = new Gson();
+
+        String sender = obj.get("username").getAsString();
+
+        ArrayList<Msg> msgs = MessageDao.getMsgsPending(sender);
+        JsonArray msgArray = new JsonArray();
+
+        for (Msg msg : msgs) {
+            JsonElement elem = gson.toJsonTree(msg);
+            msgArray.add(elem);
+        }
+
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "pending");
         response.add("msgs", msgArray);
 
         sesh.getAsyncRemote().sendText(response.toString());

@@ -1,9 +1,8 @@
 package arch.joe.app;
 
-import java.sql.Timestamp;
-
 public class Msg {
 
+    private int msgId;
     private String msg;
     private final String msgSender;
     private final String aesSender;
@@ -11,6 +10,7 @@ public class Msg {
     private final String aesReceiver;
     private final String aesIv;
     private final long timeStamp;
+    private boolean sent;
 
     public Msg(String msg, String msgSender, String msgReceiver, String aesSender, String aesReceiver, String aesIv) {
 
@@ -21,10 +21,11 @@ public class Msg {
         this.aesReceiver = aesReceiver;
         this.aesIv = aesIv;
         this.timeStamp = System.currentTimeMillis();
+        this.sent = false;
     }
 
-    public Msg(String msg, String msgSender, String msgReceiver, long time, String aesSender, String aesReceiver,
-            String aesIv) {
+    public Msg(int msgId, String msg, String msgSender, String msgReceiver, long time, String aesSender,
+            String aesReceiver, String aesIv, boolean sent) {
 
         this.msg = msg;
         this.msgSender = msgSender;
@@ -33,10 +34,16 @@ public class Msg {
         this.aesReceiver = aesReceiver;
         this.aesIv = aesIv;
         this.timeStamp = time;
+        this.sent = sent;
+        this.msgId = msgId;
     }
 
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
     }
 
     public String getMsg() {
@@ -66,4 +73,17 @@ public class Msg {
     public String getAesIv() {
         return aesIv;
     }
+
+    public boolean getSent() {
+        return sent;
+    }
+
+    public int getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(int msgId) {
+        this.msgId = msgId;
+    }
+
 }

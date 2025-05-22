@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -14,7 +15,6 @@ import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.crypto.SecretKey;
@@ -31,17 +31,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import arch.joe.app.Msg;
+import arch.joe.client.GUI.Utils;
+import arch.joe.client.GUI.Messenger.Components.ChatBubble;
 import arch.joe.security.Crypto;
 
 public class ChatClient extends WebSocketClient {
 
-    private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
-    private final BlockingQueue<String> chatQueue = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<String> chatQueue = new LinkedBlockingQueue<>();
     private String token;
     private String username;
     private String currentReceiver;
 
-    public ChatClient(URI serverUri, Draft draft) {
+    public ChatClient(URI serverUri, Draft draft) throws Exception {
         super(serverUri, draft);
     }
 
@@ -70,15 +72,7 @@ public class ChatClient extends WebSocketClient {
         String type = obj.get("type").getAsString();
 
         if (type.equals("receive_msg")) {
-
-            String sender = obj.get("sender").getAsString();
-
-            if (this.currentReceiver != null) {
-                if (this.currentReceiver.equals(sender)) {
-                    chatQueue.add(message);
-                }
-            }
-
+            chatQueue.add(message);
         } else {
             messageQueue.add(message);
 
@@ -228,10 +222,10 @@ public class ChatClient extends WebSocketClient {
     // user_not_found
     // user_not_online
     // user_online
-    public boolean sendMsg(String message, String sender, String receiver, String token) throws Exception {
+    public boolean sendMsg(String message) throws Exception {
 
-        PublicKey senderKey = getPubKey(sender);
-        PublicKey receiverKey = getPubKey(receiver);
+        PublicKey senderKey = getPubKey(username);
+        PublicKey receiverKey = getPubKey(currentReceiver);
 
         SecretKey aesKey = Crypto.makeAESKey();
         String aesIv = Crypto.generateIVBytes();
@@ -250,8 +244,8 @@ public class ChatClient extends WebSocketClient {
             JsonObject msgRequest = new JsonObject();
             msgRequest.addProperty("type", "send_msg");
             msgRequest.addProperty("message", message);
-            msgRequest.addProperty("sender", sender);
-            msgRequest.addProperty("receiver", receiver);
+            msgRequest.addProperty("sender", username);
+            msgRequest.addProperty("receiver", currentReceiver);
             msgRequest.addProperty("aes_sender", aesSender);
             msgRequest.addProperty("aes_receiver", aesReceiver);
             msgRequest.addProperty("aes_iv", aesIv);
@@ -309,8 +303,9 @@ public class ChatClient extends WebSocketClient {
     }
 
     public void savePrivateKey(PrivateKey key, String username) {
+        Path privateKeyPath = Utils.TEXT_ME_PATH.resolve(username + "_private.key");
 
-        try (FileOutputStream out = new FileOutputStream(username + "_private.key")) {
+        try (FileOutputStream out = new FileOutputStream(privateKeyPath.toFile())) {
             out.write(key.getEncoded());
         } catch (IOException e) {
             e.printStackTrace();
@@ -319,8 +314,9 @@ public class ChatClient extends WebSocketClient {
     }
 
     public PrivateKey readPrivateKey(String username) throws Exception {
+        Path privateKeyPath = Utils.TEXT_ME_PATH.resolve(username + "_private.key");
 
-        try (FileInputStream in = new FileInputStream(username + "_private.key")) {
+        try (FileInputStream in = new FileInputStream(privateKeyPath.toFile())) {
 
             byte[] readBytes = in.readAllBytes();
 
@@ -371,6 +367,40 @@ public class ChatClient extends WebSocketClient {
         }
 
         return msgsList;
+    }
+
+    public void getPending() throws Exception {
+        Gson gson = new Gson();
+
+        JsonObject pendingMsgReq = new JsonObject();
+        pendingMsgReq.addProperty("type", "pending_request");
+        pendingMsgReq.addProperty("username", this.username);
+
+        send(pendingMsgReq.toString());
+
+        String response = waitForMessage();
+        JsonObject obj = parseJson(response);
+
+        if (obj.get("type").getAsString().equals("pending_empty")) {
+            return;
+
+        } else {
+            JsonArray jsonArray = obj.getAsJsonArray("msgs");
+
+            for (JsonElement elem : jsonArray) {
+                Msg msg = gson.fromJson(elem, Msg.class);
+                PrivateKey rsaKey = readPrivateKey(getUsername());
+                String decryptedMsg = decipherMsg(msg, rsaKey);
+
+                if (decryptedMsg != null) {
+                    msg.setMsg(decryptedMsg);
+                    Utils.mController.addMsgUi(new ChatBubble(msg.getMsg(), false, Utils.timeFormat(msg.msgTime())),
+                            msg);
+                } else {
+                    System.err.println("Decryption failed.");
+                }
+            }
+        }
     }
 
     protected String decipherMsg(Msg msg, PrivateKey rsaKey) throws Exception {
@@ -424,11 +454,6 @@ public class ChatClient extends WebSocketClient {
 
     public String getUsername() {
         return this.username;
-
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
 
     }
 

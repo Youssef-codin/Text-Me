@@ -8,7 +8,6 @@
 --usr_key BLOB NOT NULL
 --);
 
---
 --CREATE TABLE msgs(
 --msg_id INTEGER PRIMARY KEY,
 --msg BLOB NOT NULL,
@@ -18,6 +17,7 @@
 --aes_receiver BLOB NOT NULL,
 --time_stamp INTEGER NOT NULL,
 --aes_iv BLOB NOT NULL,
+--sent BOOLEAN NOT NULL,
 --FOREIGN KEY (msg_sender) REFERENCES users(usr_name),
 --FOREIGN KEY (msg_receiver) REFERENCES users(usr_name)
 --);
@@ -27,5 +27,7 @@
 
 --DELETE FROM users;
 --DELETE FROM msgs;
+
+
 SELECT * FROM users;
 SELECT * FROM msgs;

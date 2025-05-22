@@ -5,10 +5,10 @@ import java.security.KeyPair;
 import java.util.Scanner;
 
 import arch.joe.client.ChatClient;
-import arch.joe.client.ChatListener;
+import arch.joe.client.ChatMsgHandler;
 import arch.joe.security.Crypto;
 
-public class ClientCLI {
+public class MainCLI {
 
     public static void main(String[] args) throws Exception {
 
@@ -81,7 +81,6 @@ public class ClientCLI {
 
         } else {
             System.out.println("registered");
-            c.setUsername(name);
             c.savePrivateKey(keyPair.getPrivate(), name);
 
         }
@@ -119,7 +118,7 @@ public class ClientCLI {
             System.out.println("send q at anytime to quit the chat.");
             c.setCurrentReceiver(receiver);
             c.msgHistory();
-            Thread thread = new Thread(new ChatListener(c));
+            Thread thread = new Thread(new ChatMsgHandler(true));
             thread.start();
             String message;
             Thread.sleep(100);
@@ -132,7 +131,7 @@ public class ClientCLI {
                     disconnect(c);
 
                 } else {
-                    boolean sent = c.sendMsg(message, c.getUsername(), receiver, c.getToken());
+                    boolean sent = c.sendMsg(message);
                     if (!sent) {
                         break;
                     }

@@ -37,12 +37,6 @@ public class Messenger extends Application {
 
     }
 
-    @Override
-    public void stop() {
-        Utils.c.close();
-        System.exit(0);
-    }
-
     public static void main(String[] args) {
         launch(args);
     }
