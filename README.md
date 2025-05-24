@@ -9,9 +9,9 @@ I wanted to make a side-project that would combine Networking, Database manageme
 *   **Real-Time Messaging:** Instant message exchange with contacts.
 *   **Modern User Interface:** Clean and intuitive UI built with JavaFX and MaterialFX.
 *   **Cross-Platform:** Runs on any system with Java installed.
-*   **Forget password and email OTP: (SOON)** 
+*   **Register UI:** Welcoming sign-up UI. 
+*   **Forget password, email OTP and verify email: (SOON)** 
 *   **User Profiles & Settings: (SOON)** 
-*   **Register UI: (SOON)**
 *   **File Sharing: (PLANNED)** 
 *   **Group chats: (PLANNED)**
 
