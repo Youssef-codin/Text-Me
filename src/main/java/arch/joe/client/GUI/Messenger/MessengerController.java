@@ -45,35 +45,10 @@ public class MessengerController implements Initializable {
     @FXML
     private HBox anchorHbox;
     @FXML
-    private MFXButton sendButton;
+    private MFXButton sendButton, emojiButton, shareButton, chatButton, profileButton, logoutButton, groupButton,
+            settingsButton, searchButton, addButton;
     @FXML
-    private MFXButton emojiButton;
-    @FXML
-    private MFXButton shareButton;
-    @FXML
-    private MFXButton chatButton;
-    @FXML
-    private MFXButton profileButton;
-    @FXML
-    private MFXButton logoutButton;
-    @FXML
-    private MFXButton groupButton;
-    @FXML
-    private MFXButton settingsButton;
-    @FXML
-    private MFXButton searchButton;
-    @FXML
-    private MFXButton addButton;
-    @FXML
-    private MaterialIconView settingsIcon;
-    @FXML
-    private MaterialIconView groupIcon;
-    @FXML
-    private MaterialIconView logoutIcon;
-    @FXML
-    private MaterialIconView profileIcon;
-    @FXML
-    private MaterialIconView chatIcon;
+    private MaterialIconView settingsIcon, groupIcon, logoutIcon, profileIcon, chatIcon;
     @FXML
     private Label currentReceiver;
     @FXML
@@ -83,9 +58,7 @@ public class MessengerController implements Initializable {
     @FXML
     private VBox chatBox;
     @FXML
-    private MFXTextField messageField;
-    @FXML
-    private MFXTextField searchField;
+    private MFXTextField messageField, searchField;
 
     Stage stage;
 

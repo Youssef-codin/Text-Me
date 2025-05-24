@@ -11,32 +11,77 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="726.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="arch.joe.client.GUI.Login.LoginController">
    <children>
-      <MFXButton fx:id="loginButton" buttonType="RAISED" defaultButton="true" depthLevel="LEVEL1" focusTraversable="false" layoutX="411.0" layoutY="286.0" onAction="#login" prefHeight="39.0" prefWidth="96.0" rippleColor="WHITE" style="-fx-background-radius: 5em; -fx-background-color: #1976D2; -fx-text-fill: #212121; -fx-border-radius: 5em; -fx-padding: 0.5em 1em; -fx-border-insets: 0;" stylesheets="@../CSS/Login.css" text="Login">
-         <font>
-            <Font name="Inter Display Regular" size="15.0" />
-         </font>
-         <effect>
-            <Blend mode="COLOR_DODGE" opacity="0.38" />
-         </effect>
-      </MFXButton>
-      <ImageView fitHeight="82.0" fitWidth="122.0" layoutX="480.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../Images/loginIco.png" />
-         </image>
-      </ImageView>
-      <Pane prefHeight="400.0" prefWidth="298.0" style="-fx-background-color: linear-gradient(to bottom, #bbdefb, #f5faff);">
+      <Pane fx:id="registerPane" prefHeight="400.0" prefWidth="428.0" translateX="-428.0">
          <children>
-            <ImageView fx:id="papersBackground" fitHeight="327.0" fitWidth="328.0" layoutX="-15.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true">
+            <MFXButton fx:id="signUpButton" buttonType="RAISED" depthLevel="LEVEL1" focusTraversable="false" layoutX="109.0" layoutY="319.0" onAction="#signUp" prefHeight="39.0" prefWidth="96.0" rippleColor="WHITE" style="-fx-background-radius: 5em; -fx-background-color: #1976D2; -fx-text-fill: #212121; -fx-border-radius: 5em; -fx-padding: 0.5em 1em; -fx-border-insets: 0;" stylesheets="@../CSS/Login.css" text="Sign-up">
+               <font>
+                  <Font name="Inter Display Regular" size="15.0" />
+               </font>
+               <effect>
+                  <Blend mode="COLOR_DODGE" opacity="0.38" />
+               </effect>
+            </MFXButton>
+            <MFXButton fx:id="backToLogin" buttonType="RAISED" depthLevel="LEVEL1" focusTraversable="false" layoutX="224.0" layoutY="319.0" onAction="#backToLogin" prefHeight="39.0" prefWidth="96.0" rippleColor="WHITE" style="-fx-background-radius: 5em; -fx-border-color: bdbdbd; -fx-background-color: #e0e0e0; -fx-text-fill: #212121; -fx-border-radius: 5em; -fx-padding: 0.5em 1em; -fx-border-insets: 0;" stylesheets="@../CSS/Login.css" text="Login" textFill="WHITE">
+               <font>
+                  <Font name="Inter Display Regular" size="15.0" />
+               </font>
+            </MFXButton>
+            <VBox alignment="CENTER" layoutX="77.0" layoutY="81.0" prefHeight="196.0" prefWidth="275.0" spacing="20.0">
+               <children>
+                  <MFXTextField fx:id="emailField" floatingText="Email" focusTraversable="false" prefHeight="39.0" prefWidth="275.0" style="-fx-background-color: #f5f5f5; -fx-border-color: transparent transparent #90caf9 transparent; -fx-border-width: 0 0 2px 0; -fx-padding: 4 0 4 4; -fx-background-insets: 0; -fx-background-radius: 0; -fx-border-radius: 0; -fx-font: 14px &quot;Inter Display Light&quot;;" styleClass="default-text-field" stylesheets="@../CSS/Login.css">
+                     <font>
+                        <Font name="Inter Display ExtraBold Italic" size="14.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </MFXTextField>
+                  <MFXTextField fx:id="rUserField" floatingText="Username" focusTraversable="false" prefHeight="39.0" prefWidth="275.0" style="-fx-background-color: #f5f5f5; -fx-border-color: transparent transparent #90caf9 transparent; -fx-border-width: 0 0 2px 0; -fx-padding: 4 0 4 4; -fx-background-insets: 0; -fx-background-radius: 0; -fx-border-radius: 0; -fx-font: 14px &quot;Inter Display Light&quot;;" styleClass="default-text-field" stylesheets="@../CSS/Login.css">
+                     <font>
+                        <Font name="Inter Display ExtraBold Italic" size="14.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </MFXTextField>
+                  <MFXPasswordField fx:id="rPasswordField" floatingText="Password" focusTraversable="false" prefHeight="39.0" prefWidth="275.0" style="-fx-border-radius: 0; -fx-background-color: #f5f5f5; -fx-border-color: transparent transparent #90caf9 transparent; -fx-border-width: 0 0 2px 0; -fx-padding: 4; -fx-background-radius: 0; -fx-font: 14px &quot;Inter Display Light&quot;;" styleClass="default-password-field" stylesheets="@../CSS/Login.css">
+                     <font>
+                        <Font name="Inter Display Light" size="14.0" />
+                     </font>
+                  </MFXPasswordField>
+               </children>
+            </VBox>
+            <Label contentDisplay="CENTER" focusTraversable="false" layoutX="77.0" layoutY="14.0" prefHeight="48.0" prefWidth="275.0" text="Create an Account" textAlignment="CENTER" textOverrun="CLIP">
+               <font>
+                  <Font name="Queensides Medium" size="27.0" />
+               </font>
+            </Label>
+            <Label contentDisplay="CENTER" focusTraversable="false" layoutX="83.0" layoutY="42.0" prefHeight="39.0" prefWidth="151.0" text="start chatting securely" textAlignment="CENTER" textOverrun="CLIP">
+               <font>
+                  <Font name="Queensides Medium" size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="rErrorField" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="95.0" layoutY="273.0" prefHeight="39.0" prefWidth="255.0" style="-fx-text-fill: red;" text="Successfully registered! Hope you enjoy my app :-)" visible="false" wrapText="true">
+               <font>
+                  <Font name="Inter Display Regular" size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+      <Pane fx:id="drawingPane" prefHeight="400.0" prefWidth="298.0" style="-fx-background-color: linear-gradient(to bottom, #bbdefb, #f5faff);">
+         <children>
+            <ImageView fx:id="papersBackground" fitHeight="327.0" fitWidth="328.0" layoutX="-14.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../Images/papersbackground.png" />
                </image>
             </ImageView>
-            <ImageView fx:id="drawing" fitHeight="377.0" fitWidth="383.0" layoutX="-24.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="drawing" fitHeight="377.0" fitWidth="383.0" layoutX="-20.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../Images/loginIllustration.png" />
                </image>
@@ -50,33 +95,50 @@
             </ImageView>
          </children>
       </Pane>
-      <MFXPasswordField fx:id="passwordField" floatingText="Password" layoutX="383.0" layoutY="211.0" prefHeight="39.0" prefWidth="275.0" style="-fx-border-radius: 0; -fx-background-color: #f5f5f5; -fx-border-color: transparent transparent #90caf9 transparent; -fx-border-width: 0 0 2px 0; -fx-padding: 4; -fx-background-radius: 0; -fx-font: 14px &quot;Inter Display Light&quot;;" stylesheets="@../CSS/Login.css">
-         <font>
-            <Font name="Inter Display Light" size="14.0" />
-         </font>
-      </MFXPasswordField>
-      <MFXTextField fx:id="userField" floatingText="Username or Email" layoutX="385.0" layoutY="151.0" prefHeight="39.0" prefWidth="275.0" style="-fx-background-color: #f5f5f5; -fx-border-color: transparent transparent #90caf9 transparent; -fx-border-width: 0 0 2px 0; -fx-padding: 4 0 4 4; -fx-background-insets: 0; -fx-background-radius: 0; -fx-border-radius: 0; -fx-font: 14px &quot;Inter Display Light&quot;;" stylesheets="@../CSS/Login.css">
-         <font>
-            <Font name="Inter Display ExtraBold Italic" size="14.0" />
-         </font>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-      </MFXTextField>
-      <MFXButton fx:id="registerButton" buttonType="RAISED" depthLevel="LEVEL1" focusTraversable="false" layoutX="533.0" layoutY="286.0" onAction="#login" prefHeight="39.0" prefWidth="96.0" rippleColor="WHITE" style="-fx-background-radius: 5em; -fx-border-color: bdbdbd; -fx-background-color: #e0e0e0; -fx-text-fill: #212121; -fx-border-radius: 5em; -fx-padding: 0.5em 1em; -fx-border-insets: 0;" stylesheets="@../CSS/Login.css" text="Register" textFill="WHITE">
-         <font>
-            <Font name="Inter Display Regular" size="15.0" />
-         </font>
-      </MFXButton>
-      <Label contentDisplay="CENTER" focusTraversable="false" layoutX="384.0" layoutY="103.0" prefHeight="48.0" prefWidth="275.0" text="Welcome to Text-me!" textAlignment="CENTER" textOverrun="CLIP">
-         <font>
-            <Font name="Queensides Medium" size="27.0" />
-         </font>
-      </Label>
-      <Label fx:id="errorField" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="396.0" layoutY="333.0" prefHeight="24.0" prefWidth="249.0" text="wrong password!" textFill="RED" visible="false" wrapText="true">
-         <font>
-            <Font name="Inter Display Regular" size="14.0" />
-         </font>
-      </Label>
+      <Pane fx:id="loginPane" layoutX="298.0" prefHeight="400.0" prefWidth="428.0">
+         <children>
+            <MFXButton fx:id="loginButton" buttonType="RAISED" defaultButton="true" depthLevel="LEVEL1" focusTraversable="false" layoutX="105.0" layoutY="298.0" onAction="#login" prefHeight="39.0" prefWidth="96.0" rippleColor="WHITE" style="-fx-background-radius: 5em; -fx-background-color: #1976D2; -fx-text-fill: #212121; -fx-border-radius: 5em; -fx-padding: 0.5em 1em; -fx-border-insets: 0;" stylesheets="@../CSS/Login.css" text="Login">
+               <font>
+                  <Font name="Inter Display Regular" size="15.0" />
+               </font>
+               <effect>
+                  <Blend mode="COLOR_DODGE" opacity="0.38" />
+               </effect>
+            </MFXButton>
+            <ImageView fitHeight="82.0" fitWidth="122.0" layoutX="173.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/loginIco.png" />
+               </image>
+            </ImageView>
+            <MFXPasswordField fx:id="passwordField" floatingText="Password" layoutX="77.0" layoutY="214.0" prefHeight="39.0" prefWidth="275.0" style="-fx-border-radius: 0; -fx-background-color: #f5f5f5; -fx-border-color: transparent transparent #90caf9 transparent; -fx-border-width: 0 0 2px 0; -fx-padding: 4; -fx-background-radius: 0; -fx-font: 14px &quot;Inter Display Light&quot;;" styleClass="default-password-field" stylesheets="@../CSS/Login.css">
+               <font>
+                  <Font name="Inter Display Light" size="14.0" />
+               </font>
+            </MFXPasswordField>
+            <MFXTextField fx:id="userField" floatingText="Username or Email" layoutX="77.0" layoutY="150.0" prefHeight="39.0" prefWidth="275.0" style="-fx-background-color: #f5f5f5; -fx-border-color: transparent transparent #90caf9 transparent; -fx-border-width: 0 0 2px 0; -fx-padding: 4 0 4 4; -fx-background-insets: 0; -fx-background-radius: 0; -fx-border-radius: 0; -fx-font: 14px &quot;Inter Display Light&quot;;" styleClass="default-text-field" stylesheets="@../CSS/Login.css">
+               <font>
+                  <Font name="Inter Display ExtraBold Italic" size="14.0" />
+               </font>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </MFXTextField>
+            <MFXButton fx:id="registerButton" buttonType="RAISED" depthLevel="LEVEL1" focusTraversable="false" layoutX="229.0" layoutY="298.0" onAction="#register" prefHeight="39.0" prefWidth="96.0" rippleColor="WHITE" style="-fx-background-radius: 5em; -fx-border-color: bdbdbd; -fx-background-color: #e0e0e0; -fx-text-fill: #212121; -fx-border-radius: 5em; -fx-padding: 0.5em 1em; -fx-border-insets: 0;" stylesheets="@../CSS/Login.css" text="Register" textFill="WHITE">
+               <font>
+                  <Font name="Inter Display Regular" size="15.0" />
+               </font>
+            </MFXButton>
+            <Label contentDisplay="CENTER" focusTraversable="false" layoutX="77.0" layoutY="96.0" prefHeight="48.0" prefWidth="275.0" text="Welcome to Text-me!" textAlignment="CENTER" textOverrun="CLIP">
+               <font>
+                  <Font name="Queensides Medium" size="27.0" />
+               </font>
+            </Label>
+            <Label fx:id="errorField" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="74.0" layoutY="264.0" prefHeight="30.0" prefWidth="275.0" text="wrong password!" textFill="RED" visible="false" wrapText="true">
+               <font>
+                  <Font name="Inter Display Regular" size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
    </children>
 </AnchorPane>

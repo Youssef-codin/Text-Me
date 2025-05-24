@@ -1,5 +1,7 @@
 // TODO: 
 // Add token to a file
+// FIXME: 
+// must add timeout incase a message doesnt get added 
 
 package arch.joe.client;
 
@@ -9,6 +11,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.security.KeyFactory;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.EncodedKeySpec;
@@ -94,8 +97,13 @@ public class ChatClient extends WebSocketClient {
         // if the error is fatal then onClose will be called additionally
     }
 
-    public boolean registerRequest(String name, String email, String hashedPass, String salt, byte[] pubKey)
+    public boolean registerRequest(String name, String email, String pass)
             throws Exception {
+
+        String salt = Crypto.makeSalt();
+        KeyPair keyPair = Crypto.makeKeyPair();
+        byte[] publicKey = keyPair.getPublic().getEncoded();
+        String hashedPass = Crypto.stringToHash(pass, salt);
 
         JsonObject request = new JsonObject();
         request.addProperty("type", "register");
@@ -103,7 +111,7 @@ public class ChatClient extends WebSocketClient {
         request.addProperty("email", email);
         request.addProperty("password", hashedPass);
         request.addProperty("salt", salt);
-        request.addProperty("key", Crypto.encoder(pubKey));
+        request.addProperty("key", Crypto.encoder(publicKey));
 
         send(request.toString());
 
@@ -112,9 +120,12 @@ public class ChatClient extends WebSocketClient {
         response = obj.get("successful").getAsString();
 
         if (response.equals("true")) {
+            savePrivateKey(keyPair.getPrivate(), name);
             return true;
+
         } else {
             return false;
+
         }
     }
 
@@ -204,6 +215,24 @@ public class ChatClient extends WebSocketClient {
         JsonObject request = new JsonObject();
         request.addProperty("type", "user_there");
         request.addProperty("username", name);
+        send(request.toString());
+
+        String isThere = waitForMessage();
+
+        JsonObject obj = parseJson(isThere);
+        isThere = obj.get("is_there").getAsString();
+
+        if (isThere.equals("true")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean emailThere(String email) throws InterruptedException {
+        JsonObject request = new JsonObject();
+        request.addProperty("type", "email_there");
+        request.addProperty("email", email);
         send(request.toString());
 
         String isThere = waitForMessage();

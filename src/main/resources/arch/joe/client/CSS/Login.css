@@ -1,31 +1,65 @@
-.wrong-field{
+.wrong-field {
     -fx-border-color: transparent transparent #F44336 transparent !important;
 }
 
-.mfx-text-field:hover,
-.mfx-password-field:hover {
+.default-text-field.wrong-field .floating-text,
+.default-password-field.wrong-field .floating-text {
+    -fx-text-fill: #F44336 !important;
+    -fx-background-color: transparent !important;
+}
+
+.correct-field {
+    -fx-border-color: transparent transparent #4CAF50 transparent !important;
+}
+
+.default-text-field.correct-field .floating-text,
+.default-password-field.correct-field .floating-text {
+    -fx-text-fill: #4CAF50 !important;
+    -fx-background-color: transparent !important;
+}
+
+.default-text-field.correct-field:focus-within,
+.default-password-field.correct-field:focus-within {
+    -fx-border-color: transparent transparent #4CAF50 transparent !important;
+    -fx-background-color: #eaeaea !important;
+}
+
+.default-text-field.correct-field:focus-within .floating-text,
+.default-password-field.correct-field:focus-within .floating-text {
+    -fx-text-fill: #4CAF50 !important;
+}
+
+.default-text-field:hover,
+.default-password-field:hover {
     -fx-border-color: #1976D2 !important;
     -fx-background-color: #eaeaea !important;
 }
 
-.mfx-text-field:focus-within,
-.mfx-password-field:focus-within {
+.default-text-field:focus-within,
+.default-password-field:focus-within {
     -fx-border-color: #1976D2 !important;
     -fx-background-color: #eaeaea !important;
 }
 
-.mfx-text-field:floating .floating-text,
-.mfx-password-field:floating .floating-text {
+.default-text-field:focus-within .floating-text,
+.default-password-field:focus-within .floating-text {
+    -fx-text-fill: #1976D2 !important;
+}
+
+.default-text-field:floating .floating-text,
+.default-password-field:floating .floating-text {
     -fx-text-fill: #1976D2 !important;
     -fx-background-color: transparent !important;
 }
 
-#loginButton:hover {
+#loginButton:hover,
+#signUpButton:hover {
     -fx-background-color: #1565C0 !important;
     -fx-cursor: hand;
 }
 
-#registerButton:hover {
+#registerButton:hover,
+#backToLogin:hover {
     -fx-background-color: #d5d5d5 !important;
     -fx-cursor: hand;
 }

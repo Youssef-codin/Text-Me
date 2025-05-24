@@ -23,9 +23,7 @@ import javafx.util.Duration;
 public class SearchPopUpController implements Initializable {
 
     @FXML
-    private MFXButton addButton;
-    @FXML
-    private MFXButton searchButton;
+    private MFXButton addButton, searchButton;
     @FXML
     private MFXTextField searchField;
     @FXML

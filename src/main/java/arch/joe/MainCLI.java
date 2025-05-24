@@ -70,18 +70,13 @@ public class MainCLI {
         System.out.print("Password: ");
         String pass = scanner.nextLine();
 
-        String salt = Crypto.makeSalt();
-        KeyPair keyPair = Crypto.makeKeyPair();
-        byte[] publicKey = keyPair.getPublic().getEncoded();
-
-        boolean response = c.registerRequest(name, email, Crypto.stringToHash(pass, salt), salt, publicKey);
+        boolean response = c.registerRequest(name, email, pass);
 
         if (!response) {
             System.err.println("username or email unavailable");
 
         } else {
             System.out.println("registered");
-            c.savePrivateKey(keyPair.getPrivate(), name);
 
         }
     }

@@ -120,6 +120,7 @@ public class ChatServer {
             case "pending_request" -> pendingRequest(sesh, obj);
             case "request_pub_key" -> keyRequest(sesh, obj);
             case "change_password" -> changePass(sesh, obj);
+            case "email_there" -> emailThere(sesh, obj);
 
             default -> {
                 sesh.close(new CloseReason(CloseCodes.CANNOT_ACCEPT, "'Type' is empty"));
@@ -164,7 +165,6 @@ public class ChatServer {
         boolean validEmail = isValidEmailAddress(email);
 
         if (!validEmail) {
-            System.err.println("invalid Email");
             response.addProperty("successful", "false");
 
         } else {
@@ -268,6 +268,24 @@ public class ChatServer {
         response.addProperty("type", "user_there");
 
         if (available == null) {
+            response.addProperty("is_there", "false");
+
+        } else {
+            response.addProperty("is_there", "true");
+
+        }
+
+        sesh.getAsyncRemote().sendText(response.toString());
+    }
+
+    private void emailThere(Session sesh, JsonObject obj) {
+        String email = obj.get("email").getAsString();
+        boolean there = UserDao.emailExists(email);
+
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "email_there");
+
+        if (!there) {
             response.addProperty("is_there", "false");
 
         } else {
