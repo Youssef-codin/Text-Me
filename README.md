@@ -78,16 +78,7 @@ If you would like to check out my project, please follow the following instructi
         ```
         </details>
 
-    2.  To **register** an account, you need to run **`arch.joe.MainCLI`** (MainCLI is outdated, only use it for registering)
-        <details>
-        <summary>Show command</summary>
-
-        ```bash
-        mvn exec:java -Dexec.mainClass="arch.joe.MainCLI"
-        ```
-        </details>
-
-    3.  To **login** and start chatting, run **`arch.joe.Main`**
+    2.  To **login** or register and start chatting, run **`arch.joe.Main`**
         <details>
         <summary>Show command</summary>
 
