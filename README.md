@@ -98,9 +98,9 @@ If you would like to check out my project, please follow the following instructi
 
     Of course, you could also run these through an IDE (Vs Code, Intellij, etc.)
 
+## - Known Bugs:
+* If  the client doesn't receive a message, the cleint will freeze up until it receives a message. 
 
 ## - License
 
 This project is licensed under the MIT license.
-
-
