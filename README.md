@@ -47,10 +47,26 @@ If you would like to check out my project, please follow the following instructi
 ### Prerequisites
 
 *   Java Development Kit (JDK) Version `21` or above
-*   Apache Maven installed.
+*   Apache Maven installed (if you are going to run from source.)
 
 
-### Installation
+### Run the Pre-Release
+If you want to run the pre-built release version of the application download the server and the client release [here.](https://github.com/Youssef-codin/Text-Me/releases/tag/v0.1.0-alpha) 
+    
+* Open a terminal and navigate to the directory where the server .jar file is located
+
+
+ 1. Run the Server:
+    ```bash
+    java -jar Text-Me-Server.jar
+     ```
+
+ 2. Run the Client:
+    ```bash
+    java -jar Text-Me-Client.jar
+    ```
+
+### Run from source
 
 1.  **Clone the repository:**
     ```bash
@@ -58,17 +74,11 @@ If you would like to check out my project, please follow the following instructi
     cd Text-Me
     ```
 
-2.  **Build the project:**
-    *   Maven:
-        ```bash
-        mvn clean install
-        ```
-
-3.  **Database Setup:**
+2.  **Database Setup:**
     * The database file is included. However, you can always make your own SQLite DB and run the script.sql file under `database/script.sql`
 
 
-4.  **Run the application:**
+3.  **Run the application:**
     1.  Run the **server** under **`arch.joe.server.ChatServer`**
         <details>
         <summary>Show command</summary>
@@ -89,8 +99,33 @@ If you would like to check out my project, please follow the following instructi
 
     Of course, you could also run these through an IDE (Vs Code, Intellij, etc.)
 
+### Build from source
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/Youssef-codin/Text-Me.git
+    cd Text-Me
+    ```
+
+2.  **Database Setup:**
+    * The database file is included. However, you can always make your own SQLite DB and run the script.sql file under `database/script.sql`
+
+3. **Build it:**
+    1. To build the server package:
+    ```
+    mvn clean package -Pserver
+    ```
+
+    2. To build the server package ***(make sure to move the server package before building a new one so it doesn't overwrite it)***:
+    ```
+    mvn clean package -Pclient
+    ```
+4. **Run it:**
+    ```
+    java -jar (the-jar-file).jar
+    ```
 ## - Known Bugs:
-* If  the client doesn't receive a message, the cleint will freeze up until it receives a message. 
+* If  the client doesn't receive a message, the client will freeze up until it receives a message. 
 
 ## - License
 
