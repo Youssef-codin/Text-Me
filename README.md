@@ -50,7 +50,7 @@ If you would like to check out my project, please follow the following instructi
 *   Apache Maven installed (if you are going to run from source.)
 
 
-### Run the Pre-Release
+### ~Run the Pre-Release~ (currently broken)
 If you want to run the pre-built release version of the application download the server and the client release [here.](https://github.com/Youssef-codin/Text-Me/releases/tag/v0.1.0-alpha) 
     
 * Open a terminal and navigate to the directory where the server .jar file is located
